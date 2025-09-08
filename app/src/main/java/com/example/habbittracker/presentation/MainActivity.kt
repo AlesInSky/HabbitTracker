@@ -56,7 +56,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun CalendarScreen() {
     val vm: CalendarViewModel = koinViewModel()
-    var month by remember { mutableStateOf("Январь 2025") }
+    val month = vm.getMonth()
 
     Column(
         modifier = Modifier

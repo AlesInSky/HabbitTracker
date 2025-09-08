@@ -16,8 +16,8 @@ class CalendarViewModel(
 
     class Days(val number: Int?)
 
-    fun getMonth(){
-       // getMonthUseCase.getMonthName()
+    fun getMonth(): String{
+        return getMonthUseCase.execute().month.toString()
     }
 
 //    fun getMonth(month: Int): String {
