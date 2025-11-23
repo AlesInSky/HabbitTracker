@@ -2,8 +2,6 @@ package com.example.habbittracker.presentation
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -27,8 +25,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
@@ -58,13 +54,14 @@ fun CalendarScreen() {
     val vm: CalendarViewModel = koinViewModel()
     val month = vm.getMonth()
 
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(8.dp)
     ) {
 
-        // --- Верхняя панель с кнопками и месяцем ---
+        //Верхняя панель с кнопками и месяцем
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -73,7 +70,7 @@ fun CalendarScreen() {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Button(
-                onClick = { /* Обработать предыдущий месяц */ },
+                onClick = { vm.previousMoth() },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.background)
             ) {
                 Text(
@@ -92,7 +89,9 @@ fun CalendarScreen() {
             )
 
             Button(
-                onClick = { /* Обработать следующий месяц */ },
+                onClick = {
+                    vm.nextMonth()
+                },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.background)
             ) {
                 Text(
@@ -104,7 +103,7 @@ fun CalendarScreen() {
             }
         }
 
-        // --- Дни недели ---
+        //Дни недели
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceAround
@@ -120,7 +119,7 @@ fun CalendarScreen() {
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // --- Календарь (LazyVerticalGrid вместо RecyclerView) ---
+        //Календарь (LazyVerticalGrid вместо RecyclerView)
         LazyVerticalGrid(
             columns = GridCells.Fixed(7), // 7 дней недели
             modifier = Modifier.fillMaxSize(),

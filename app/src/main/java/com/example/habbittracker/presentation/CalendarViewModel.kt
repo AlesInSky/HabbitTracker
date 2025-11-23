@@ -1,11 +1,11 @@
 package com.example.habbittracker.presentation
 
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.example.domain.models.CalendarDateDomain
+import com.example.data.storage.models.CalendarDateData
 import com.example.domain.usecase.GetMonthUseCase
 import com.example.domain.usecase.NextMonthUseCase
 import com.example.domain.usecase.PreviousMonthUseCase
-import java.util.Calendar
 
 class CalendarViewModel(
     private val getMonthUseCase: GetMonthUseCase,
@@ -14,48 +14,26 @@ class CalendarViewModel(
 ) : ViewModel() {
 
 
-    class Days(val number: Int?)
+    var currentMonth = mutableStateOf(
+        CalendarDateData(
+            getMonthUseCase.execute().year,
+            getMonthUseCase.execute().month,
+            getMonthUseCase.execute().days
+        )
+    )
 
-    fun getMonth(): String{
-        return getMonthUseCase.execute().month.toString()
+    fun getMonth(): String {
+        return currentMonth.value.month.toString()
     }
 
-//    fun getMonth(month: Int): String {
-//        val monthList = listOf(
-//            "Январь", "Февраль", "Март", "Апрель", "Май", "Июнь", "Июль",
-//            "Август", "Сентябрь", "Октябрь", "Ноябрь", "Декабрь"
-//        )
-//        val monthTextView = monthList[month]
-//        return monthTextView
-//    }
+    fun nextMonth() {
+        val newMonth = nextMonthUseCase.execute().month
+            currentMonth.value = currentMonth.value.copy(month = newMonth)
+    }
 
-//    fun nextMonth(): CalendarDateDomain {
-//        val result = nextMonthUseCase.execute(month, year)
-//        return result
-//    }
-//
-//    fun previousMonth(): Int {
-//        month--
-//        if (month < 0) {
-//            month = 11
-//            year--
-//        }
-//        return month
-//    }
-//
-//    fun getDayInMonth(): ArrayList<Days> {
-//        calendar.set(Calendar.YEAR, year)
-//        calendar.set(Calendar.MONTH, month)
-//        calendar.set(Calendar.DAY_OF_MONTH, month)
-//        val days = mutableListOf<Days>()
-//
-//        var dayInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-//        var x = 1
-//
-//        while (x <= dayInMonth) {
-//            days.add(Days(number = x))
-//            x++
-//        }
-//        return days as ArrayList<Days>
-//    }
+    fun previousMoth() {
+        val newMonth = previousMonthUseCase.execute().month
+        currentMonth.value = currentMonth.value.copy(month = newMonth)
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.example.data.storage.sharedprefs
 
 import android.content.Context
+import android.util.Log
 import androidx.core.content.edit
 import com.example.data.storage.CalendarStorage
 import com.example.data.storage.models.CalendarDateData
@@ -10,7 +11,7 @@ private const val YEAR = "YEAR"
 private const val MONTH = "MONTH"
 private const val DAY_TO_MONTH = "DAY_TO_MONTH"
 
-class SharedPrefsCalendarStorage(context: Context): CalendarStorage {
+class SharedPrefsCalendarStorage(context: Context) : CalendarStorage {
 
     private val sharedPreferences =
         context.getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE)
@@ -24,11 +25,10 @@ class SharedPrefsCalendarStorage(context: Context): CalendarStorage {
     }
 
     override fun getCalendar(): CalendarDateData {
-        val year = sharedPreferences.getInt(YEAR, 2000)
-        val month = sharedPreferences.getInt(MONTH, 0)
-        val dayToMonth = sharedPreferences.getInt(DAY_TO_MONTH, 1)
-
-        return CalendarDateData(year,month,dayToMonth)
+        val year = sharedPreferences.getInt(YEAR, -1)
+        val month = sharedPreferences.getInt(MONTH, -1)
+        val dayToMonth = sharedPreferences.getInt(DAY_TO_MONTH, -1)
+        Log.d("TAG_CALENDAR", month.toString())
+        return CalendarDateData(year, month, dayToMonth)
     }
-
 }

@@ -11,7 +11,6 @@ import com.example.domain.repository.CalendarRepository
 class GetMonthUseCase(private val calendarRepository: CalendarRepository) {
 
     fun execute(): CalendarDateDomain {
-        return calendarRepository.getNowMonth()
+        return calendarRepository.getCurrentMonth()
     }
-
 }

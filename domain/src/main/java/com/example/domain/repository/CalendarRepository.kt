@@ -4,10 +4,8 @@ import com.example.domain.models.CalendarDateDomain
 
 interface CalendarRepository {
 
-    fun getNowMonth(): CalendarDateDomain
+    fun getCurrentMonth(): CalendarDateDomain
 
-    fun getNextMonth(): CalendarDateDomain
-
-    fun getPreviousMonth(): CalendarDateDomain
+    fun updateMonth(calendar: CalendarDateDomain)
 
 }

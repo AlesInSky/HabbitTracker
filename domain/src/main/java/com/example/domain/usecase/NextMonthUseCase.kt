@@ -5,15 +5,16 @@ import com.example.domain.repository.CalendarRepository
 
 class NextMonthUseCase(private val calendarRepository: CalendarRepository) {
 
-    fun execute(month: Int, year: Int): CalendarDateDomain {
+    fun execute(): CalendarDateDomain {
 
-        val todayDate = calendarRepository.getNowMonth()
-        val newDate = todayDate
-        if (todayDate.month > 11){
+        val todayDate = calendarRepository.getCurrentMonth()
+        val newDate = todayDate.copy()
+
+        if (todayDate.month == 11 ){
             newDate.month = 0
-            newDate.year + 1
-        }
-        return calendarRepository.getNextMonth()
+            newDate.year++
+        } else newDate.month +=1
+        calendarRepository.updateMonth(newDate)
+        return newDate
     }
-
 }
