@@ -22,8 +22,8 @@ class CalendarViewModel(
         )
     )
 
-    fun getMonth(): String {
-        return currentMonth.value.month.toString()
+    fun getMonth(): Int {
+        return currentMonth.value.month
     }
 
     fun nextMonth() {

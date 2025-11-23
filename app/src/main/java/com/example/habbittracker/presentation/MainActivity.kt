@@ -27,10 +27,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.habbittracker.R
 import com.example.habbittracker.ui.theme.HabbitTrackerTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -52,10 +54,10 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun CalendarScreen() {
     val vm: CalendarViewModel = koinViewModel()
+    val monthName = stringArrayResource(R.array.months)
     val month = vm.getMonth()
 
-
-    Column(
+        Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(8.dp)
@@ -82,7 +84,7 @@ fun CalendarScreen() {
             }
 
             Text(
-                text = month,
+                text = monthName[month],
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(Alignment.CenterVertically)
