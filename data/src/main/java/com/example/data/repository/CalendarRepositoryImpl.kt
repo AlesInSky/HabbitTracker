@@ -7,39 +7,38 @@ import com.example.domain.repository.CalendarRepository
 import java.util.Calendar
 
 //Логика здесь, потому что репозиторий знает источник данных: класс Calendar.
-
 class CalendarRepositoryImpl(private val calendarStorage: CalendarStorage) : CalendarRepository {
 
-    override fun getCurrentMonth(): CalendarDateDomain {
+    override fun getCurrentCalendar(): CalendarDateDomain {
         val calendar: Calendar = Calendar.getInstance()
-        var month: Int
-        var year: Int
-        var date: Int
-        //var weekDay: Int
+        val getCalendar = calendarStorage.getCalendar() //Получаю данные из Data
 
-        if (calendarStorage.getCalendar().year == -1 ||
-            calendarStorage.getCalendar().month == -1 ||
-            calendarStorage.getCalendar().days == -1
+        if (getCalendar.year == -1 ||
+            getCalendar.month == -1 ||
+            getCalendar.date == -1
         ) {
-            month = calendar.get(Calendar.MONTH)
-            year = calendar.get(Calendar.YEAR)
-            date = calendar.get(Calendar.DAY_OF_MONTH)
-            //weekDay = calendar.get(Calendar.DAY_OF_WEEK)
+            val month = calendar.get(Calendar.MONTH)
+            val year = calendar.get(Calendar.YEAR)
+            val date = calendar.get(Calendar.DAY_OF_MONTH)
+            val dayInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
+            return CalendarDateDomain(year, month, date, dayInMonth)
         } else {
-            month = calendarStorage.getCalendar().month
-            year = calendarStorage.getCalendar().year
-            date = calendarStorage.getCalendar().days
+            val month = getCalendar.month
+            val year = getCalendar.year
+            val date = getCalendar.date
+            val dayInMonth = getCalendar.dayInMonth
+            return CalendarDateDomain(year, month, date, dayInMonth)
         }
-        return CalendarDateDomain(year, month, date)
     }
 
     //Берем данные из CalendarDateDomain и перекидываем их в CalendarDateData
-    override fun updateMonth(calendar: CalendarDateDomain) {
+    override fun saveCalendar(calendar: CalendarDateDomain) {
         calendarStorage.saveCalendar(
             CalendarDateData(
                 calendar.year,
                 calendar.month,
-                calendar.days
+                calendar.date,
+                calendar.dayInMonth
             )
         )
     }

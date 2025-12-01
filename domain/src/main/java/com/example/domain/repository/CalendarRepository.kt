@@ -4,8 +4,8 @@ import com.example.domain.models.CalendarDateDomain
 
 interface CalendarRepository {
 
-    fun getCurrentMonth(): CalendarDateDomain
+    fun getCurrentCalendar(): CalendarDateDomain
 
-    fun updateMonth(calendar: CalendarDateDomain)
+    fun saveCalendar(calendar: CalendarDateDomain)
 
 }
