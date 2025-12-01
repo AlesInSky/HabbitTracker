@@ -55,7 +55,8 @@ class MainActivity : ComponentActivity() {
 fun CalendarScreen() {
     val vm: CalendarViewModel = koinViewModel()
     val monthName = stringArrayResource(R.array.months)
-    val month = vm.getMonth()
+        val month = vm.getMonth()
+        val dayInMonth = vm.getDayInMonth()
 
         Column(
         modifier = Modifier
@@ -127,7 +128,7 @@ fun CalendarScreen() {
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(4.dp)
         ) {
-            items((1..30).toList()) { day ->
+            items((1..dayInMonth).toList()) { day ->
                 Box(
                     modifier = Modifier
                         .padding(4.dp)
