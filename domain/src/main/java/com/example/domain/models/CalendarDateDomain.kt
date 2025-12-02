@@ -4,5 +4,6 @@ data class CalendarDateDomain(
     var year: Int,
     var month: Int,
     var date: Int,
-    var dayInMonth: Int
+    var dayInMonth: Int,
+    var firstDayOfWeek: Int
 )
