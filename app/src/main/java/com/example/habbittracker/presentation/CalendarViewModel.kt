@@ -1,5 +1,6 @@
 package com.example.habbittracker.presentation
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.domain.usecase.GetMonthUseCase
@@ -20,6 +21,11 @@ class CalendarViewModel(
 
     fun getDayInMonth(): Int {
         return currentMonth.value.dayInMonth
+    }
+
+    fun getFirstDayOfWeek(): Int {
+        val firstDay = currentMonth.value.firstDayOfWeek
+        return firstDay
     }
 
     fun nextMonth() {

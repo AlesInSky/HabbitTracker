@@ -21,6 +21,7 @@ class NextMonthUseCase(private val calendarRepository: CalendarRepository) {
         calendar.set(Calendar.YEAR, newDate.year)
         calendar.set(Calendar.MONTH, newDate.month)
         calendar.set(Calendar.DAY_OF_MONTH, 1)
+        newDate.firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
         newDate.dayInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
 
         calendarRepository.saveCalendar(newDate)

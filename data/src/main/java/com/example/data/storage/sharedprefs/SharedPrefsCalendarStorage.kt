@@ -10,6 +10,7 @@ private const val YEAR = "YEAR"
 private const val MONTH = "MONTH"
 private const val DATE = "DATE"
 private const val DAY_IN_MONTH = "DAY_IN_MONTH"
+private const val FIRST_DAY_IN_MONTH = "FIRST_DAY_IN_MONTH"
 
 class SharedPrefsCalendarStorage(context: Context) : CalendarStorage {
 
@@ -22,6 +23,7 @@ class SharedPrefsCalendarStorage(context: Context) : CalendarStorage {
             putInt(MONTH, calendar.month)
             putInt(DATE, calendar.date)
             putInt(DAY_IN_MONTH, calendar.dayInMonth)
+            putInt(FIRST_DAY_IN_MONTH, calendar.firstDayOfWeek)
         }
     }
 
@@ -30,6 +32,7 @@ class SharedPrefsCalendarStorage(context: Context) : CalendarStorage {
         val month = sharedPreferences.getInt(MONTH, -1)
         val date = sharedPreferences.getInt(DATE, -1)
         val dayInMonth = sharedPreferences.getInt(DAY_IN_MONTH, -1)
-        return CalendarDateData(year, month, date, dayInMonth)
+        val firstDayOfWeek = sharedPreferences.getInt(FIRST_DAY_IN_MONTH, -1)
+        return CalendarDateData(year, month, date, dayInMonth, firstDayOfWeek)
     }
 }
