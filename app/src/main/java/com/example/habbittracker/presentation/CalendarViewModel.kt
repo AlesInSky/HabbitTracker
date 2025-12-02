@@ -23,15 +23,15 @@ class CalendarViewModel(
     }
 
     fun getFirstDayOfWeek(): Int {
-        val firstDay = currentMonth.value.firstDayOfWeek
-        when(firstDay){
-            1 -> 7
-            2 -> 0
-            3 -> 1
-            4 -> 2
-            5 -> 3
-            6 -> 4
-            7 -> 5
+        var firstDay = currentMonth.value.firstDayOfWeek
+        when (firstDay) {
+            1 -> firstDay = 7
+            2 -> firstDay = 0
+            3 -> firstDay = 1
+            4 -> firstDay = 2
+            5 -> firstDay = 3
+            6 -> firstDay = 4
+            7 -> firstDay = 5
 
         }
         return firstDay
