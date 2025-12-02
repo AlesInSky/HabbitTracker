@@ -22,6 +22,21 @@ class CalendarViewModel(
         return currentMonth.value.dayInMonth
     }
 
+    fun getFirstDayOfWeek(): Int {
+        val firstDay = currentMonth.value.firstDayOfWeek
+        when(firstDay){
+            1 -> 7
+            2 -> 0
+            3 -> 1
+            4 -> 2
+            5 -> 3
+            6 -> 4
+            7 -> 5
+
+        }
+        return firstDay
+    }
+
     fun nextMonth() {
         val newMonth = nextMonthUseCase.execute()
         currentMonth.value = newMonth

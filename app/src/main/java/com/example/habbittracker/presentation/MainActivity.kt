@@ -57,6 +57,7 @@ fun CalendarScreen() {
     val monthName = stringArrayResource(R.array.months)
         val month = vm.getMonth()
         val dayInMonth = vm.getDayInMonth()
+        val firstDayOfWeek = vm.getFirstDayOfWeek()
 
         Column(
         modifier = Modifier
@@ -128,7 +129,7 @@ fun CalendarScreen() {
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(4.dp)
         ) {
-            items((1..dayInMonth).toList()) { day ->
+            items((firstDayOfWeek..dayInMonth).toList()) { day ->
                 Box(
                     modifier = Modifier
                         .padding(4.dp)
