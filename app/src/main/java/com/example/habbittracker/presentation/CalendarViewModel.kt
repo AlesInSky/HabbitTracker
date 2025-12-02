@@ -1,5 +1,6 @@
 package com.example.habbittracker.presentation
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.domain.usecase.GetMonthUseCase
@@ -23,16 +24,7 @@ class CalendarViewModel(
     }
 
     fun getFirstDayOfWeek(): Int {
-        var firstDay = currentMonth.value.firstDayOfWeek
-        when (firstDay) {
-            1 -> firstDay = 7
-            2 -> firstDay = 0
-            3 -> firstDay = 1
-            4 -> firstDay = 2
-            5 -> firstDay = 3
-            6 -> firstDay = 4
-            7 -> firstDay = 5
-        }
+        val firstDay = currentMonth.value.firstDayOfWeek
         return firstDay
     }
 

@@ -2,6 +2,7 @@ package com.example.habbittracker.presentation
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -58,6 +59,7 @@ fun CalendarScreen() {
         val month = vm.getMonth()
         val dayInMonth = vm.getDayInMonth()
         val firstDayOfWeek = vm.getFirstDayOfWeek()
+    Log.d("TAGAFTER", "$firstDayOfWeek")
 
         Column(
         modifier = Modifier
@@ -129,14 +131,28 @@ fun CalendarScreen() {
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(4.dp)
         ) {
-            items((firstDayOfWeek..dayInMonth).toList()) { day ->
+            val emptyCells: Int = when(firstDayOfWeek) {
+                1 -> 6
+                2 -> 0
+                3 -> 1
+                4 -> 2
+                5 -> 3
+                6 -> 4
+                7 -> 5
+                else -> 7
+            }
+            Log.d("TAGBEFORE", "$emptyCells")
+            val calendarCells = List(emptyCells) { "" } + (1..dayInMonth).map { it.toString() }
+            items(calendarCells) { day ->
                 Box(
                     modifier = Modifier
                         .padding(4.dp)
                         .size(40.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = day.toString())
+                    if (day.isNotEmpty()) {
+                        Text(text = day)
+                }
                 }
             }
         }
