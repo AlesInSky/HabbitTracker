@@ -17,9 +17,10 @@ class CalendarRepositoryImpl(private val calendarStorage: CalendarStorage) : Cal
             getCalendar.month == -1 ||
             getCalendar.date == -1
         ) {
-            val firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
             val month = calendar.get(Calendar.MONTH)
             val year = calendar.get(Calendar.YEAR)
+            calendar.set(Calendar.DAY_OF_MONTH, 1)
+            val firstDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
             val date = calendar.get(Calendar.DAY_OF_MONTH)
             val dayInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
             return CalendarDateDomain(year, month, date, dayInMonth,firstDayOfWeek)
