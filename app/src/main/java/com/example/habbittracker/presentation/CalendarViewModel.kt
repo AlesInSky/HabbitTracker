@@ -32,7 +32,6 @@ class CalendarViewModel(
             5 -> firstDay = 3
             6 -> firstDay = 4
             7 -> firstDay = 5
-
         }
         return firstDay
     }
