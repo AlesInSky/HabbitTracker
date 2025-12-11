@@ -26,6 +26,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
@@ -34,6 +38,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.habbittracker.R
+import com.example.habbittracker.presentation.navigation.BottomNav
+import com.example.habbittracker.presentation.viewmodel.CalendarViewModel
 import com.example.habbittracker.ui.theme.HabbitTrackerTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -44,7 +50,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             HabbitTrackerTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) {
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    bottomBar = { BottomNav(currentActivity = this) }
+                ) {
                     CalendarScreen()
                 }
             }
@@ -56,12 +65,26 @@ class MainActivity : ComponentActivity() {
 fun CalendarScreen() {
     val vm: CalendarViewModel = koinViewModel()
     val monthName = stringArrayResource(R.array.months)
-        val month = vm.getMonth()
-        val dayInMonth = vm.getDayInMonth()
-        val firstDayOfWeek = vm.getFirstDayOfWeek()
+    val month = vm.getMonth()
+    val dayInMonth = vm.getDayInMonth()
+    val firstDayOfWeek = vm.getFirstDayOfWeek()
+    var showDialog by remember { mutableStateOf(false) }
+    val calendarCells = remember(firstDayOfWeek, dayInMonth) {
+        val emptyCells: Int = when (firstDayOfWeek) {
+            1 -> 6
+            2 -> 0
+            3 -> 1
+            4 -> 2
+            5 -> 3
+            6 -> 4
+            7 -> 5
+            else -> 7
+        }
+        List(emptyCells) { "" } + (1..dayInMonth).map { it.toString() }
+    }
     Log.d("TAGAFTER", "$firstDayOfWeek")
 
-        Column(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(8.dp)
@@ -131,30 +154,40 @@ fun CalendarScreen() {
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(4.dp)
         ) {
-            val emptyCells: Int = when(firstDayOfWeek) {
-                1 -> 6
-                2 -> 0
-                3 -> 1
-                4 -> 2
-                5 -> 3
-                6 -> 4
-                7 -> 5
-                else -> 7
-            }
-            Log.d("TAGBEFORE", "$emptyCells")
-            val calendarCells = List(emptyCells) { "" } + (1..dayInMonth).map { it.toString() }
+
             items(calendarCells) { day ->
-                Box(
-                    modifier = Modifier
-                        .padding(4.dp)
-                        .size(40.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (day.isNotEmpty()) {
-                        Text(text = day)
-                }
+                if (day.isNotEmpty()) {
+                    Button(
+                        onClick = { showDialog = true },
+                        modifier = Modifier
+                            .padding(4.dp)
+                            .size(48.dp),
+                        contentPadding = PaddingValues(0.dp)
+                    ) {
+                        if (day.isNotEmpty()) {
+                            Text(
+                                text = day,
+                                fontSize = 14.sp
+                            )
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .padding(4.dp)
+                                    .size(48.dp)
+                            )
+                        }
+                    }
                 }
             }
+        }
+        if (showDialog) {
+            DialogHabbit(
+                onDismissRequest = { showDialog = false },
+                onConfirmation = {
+                    // действие на Yes
+                    showDialog = false
+                }
+            )
         }
     }
 }
