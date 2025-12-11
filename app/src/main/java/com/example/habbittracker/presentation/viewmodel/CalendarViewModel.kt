@@ -1,6 +1,5 @@
-package com.example.habbittracker.presentation
+package com.example.habbittracker.presentation.viewmodel
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.domain.usecase.GetMonthUseCase
