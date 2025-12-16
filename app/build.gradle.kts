@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -39,6 +40,10 @@ android {
     }
 }
 
+ksp {
+    arg("room.schemaLocation", "$projectDir/schemas")
+}
+
 dependencies {
 
     implementation(project(":domain"))
@@ -64,4 +69,8 @@ dependencies {
 
     implementation(libs.koin.android)
     implementation(libs.koin.androidx.compose)
+
+    implementation(libs.androidx.room.runtime) // ROOM
+    ksp(libs.androidx.room.compiler) // Кодогенератор для ROOM
+    implementation (libs.androidx.room.ktx) // Дополнительно для Kotlin Coroutines, Kotlin Flows
 }
