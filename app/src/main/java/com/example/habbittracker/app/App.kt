@@ -3,6 +3,7 @@ package com.example.habbittracker.app
 import android.app.Application
 import com.example.habbittracker.di.appModule
 import com.example.habbittracker.di.dataModule
+import com.example.habbittracker.di.databaseModule
 import com.example.habbittracker.di.domainModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -17,7 +18,7 @@ class App : Application() {
         startKoin {
             androidLogger(Level.DEBUG)
             androidContext(this@App)
-            modules(listOf(appModule, domainModule, dataModule))
+            modules(listOf(appModule, domainModule, dataModule, databaseModule))
         }
 
     }
