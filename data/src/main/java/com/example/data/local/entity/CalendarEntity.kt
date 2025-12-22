@@ -5,11 +5,11 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "calendar_habits")
-data class CalendarEntity (
+data class CalendarEntity(
     @PrimaryKey(autoGenerate = true)
     var calendarId: Long = 0L,
     @ColumnInfo(name = "calendar_habit_id")
     var calendarHabitId: Long = 0L,
     @ColumnInfo(name = "calendar_date")
-    var calendarDate: Int = 0
+    var calendarDate: String = "2010-01-01"
 )
