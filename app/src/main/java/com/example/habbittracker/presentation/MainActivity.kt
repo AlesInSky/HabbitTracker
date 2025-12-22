@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.habbittracker.R
+import com.example.habbittracker.presentation.dialog.DialogHabbit
 import com.example.habbittracker.presentation.navigation.BottomNav
 import com.example.habbittracker.presentation.viewmodel.CalendarViewModel
 import com.example.habbittracker.ui.theme.HabbitTrackerTheme
