@@ -1,4 +1,4 @@
-package com.example.habbittracker.presentation
+package com.example.habbittracker.presentation.dialog
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
