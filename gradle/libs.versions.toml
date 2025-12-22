@@ -21,6 +21,7 @@ ksp = "2.0.21-1.0.25"
 roomRuntimeVersion = "2.8.4"
 runtimeLivedata = "1.6.5"
 roomCommonJvm = "2.8.4"
+runtime = "1.10.0"
 
 
 [libraries]
@@ -49,6 +50,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 androidx-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
 androidx-room-common-jvm = { group = "androidx.room", name = "room-common-jvm", version.ref = "roomCommonJvm" }
+androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
