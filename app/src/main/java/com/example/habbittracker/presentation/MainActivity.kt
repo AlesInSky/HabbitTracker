@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.habbittracker.R
 import com.example.habbittracker.presentation.dialog.DialogHabbit
+import com.example.habbittracker.presentation.dialog.DialogNewHabit
 import com.example.habbittracker.presentation.navigation.BottomNav
 import com.example.habbittracker.presentation.viewmodel.CalendarViewModel
 import com.example.habbittracker.ui.theme.HabbitTrackerTheme
@@ -69,7 +70,8 @@ fun CalendarScreen() {
     val month = vm.getMonth()
     val dayInMonth = vm.getDayInMonth()
     val firstDayOfWeek = vm.getFirstDayOfWeek()
-    var showDialog by remember { mutableStateOf(false) }
+    var showConfirmDialog by remember { mutableStateOf(false) }
+    var showNewHabitDialog by remember { mutableStateOf(false) }
     val calendarCells = remember(firstDayOfWeek, dayInMonth) {
         val emptyCells: Int = when (firstDayOfWeek) {
             1 -> 6
@@ -119,9 +121,7 @@ fun CalendarScreen() {
             )
 
             Button(
-                onClick = {
-                    vm.nextMonth()
-                },
+                onClick = { vm.nextMonth() },
                 colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.background)
             ) {
                 Text(
@@ -159,7 +159,7 @@ fun CalendarScreen() {
             items(calendarCells) { day ->
                 if (day.isNotEmpty()) {
                     Button(
-                        onClick = { showDialog = true },
+                        onClick = { showConfirmDialog = true },
                         modifier = Modifier
                             .padding(4.dp)
                             .size(48.dp),
@@ -181,15 +181,24 @@ fun CalendarScreen() {
                 }
             }
         }
-        if (showDialog) {
+        if (showConfirmDialog) {
             DialogHabbit(
-                onDismissRequest = { showDialog = false },
+                onDismissRequest = { showConfirmDialog = false },
                 onConfirmation = {
                     // действие на Yes
-                    showDialog = false
+                    showConfirmDialog = false
+                    showNewHabitDialog = true
                 }
             )
         }
+//        if (showNewHabitDialog){
+//            DialogNewHabit(
+//                onDismissRequest = {showNewHabitDialog = false},
+//                onConfirmation = {
+//                    showNewHabitDialog = false
+//                }
+//                )
+//        }
     }
 }
 

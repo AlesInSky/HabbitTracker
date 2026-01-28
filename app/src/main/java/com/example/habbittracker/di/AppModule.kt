@@ -11,7 +11,9 @@ val appModule = module {
         CalendarViewModel(
             getMonthUseCase = get(),
             nextMonthUseCase = get(),
-            previousMonthUseCase = get()
+            previousMonthUseCase = get(),
+            calendarDao = get(),
+            habitDao = get()
         )
     }
 
