@@ -26,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.habbittracker.R
 import com.example.habbittracker.presentation.dialog.DialogHabbit
-import com.example.habbittracker.presentation.dialog.DialogNewHabit
 import com.example.habbittracker.presentation.navigation.BottomNav
 import com.example.habbittracker.presentation.viewmodel.CalendarViewModel
 import com.example.habbittracker.ui.theme.HabbitTrackerTheme
@@ -67,13 +67,14 @@ class MainActivity : ComponentActivity() {
 fun CalendarScreen() {
     val vm: CalendarViewModel = koinViewModel()
     val monthName = stringArrayResource(R.array.months)
-    val month = vm.getMonth()
+    val month by vm.currentMonth.collectAsState()
     val dayInMonth = vm.getDayInMonth()
-    val firstDayOfWeek = vm.getFirstDayOfWeek()
+    val firstDayOfWeek by vm.currentMonth.collectAsState()
     var showConfirmDialog by remember { mutableStateOf(false) }
     var showNewHabitDialog by remember { mutableStateOf(false) }
-    val calendarCells = remember(firstDayOfWeek, dayInMonth) {
-        val emptyCells: Int = when (firstDayOfWeek) {
+
+    val calendarCells = remember(firstDayOfWeek.firstDayOfWeek, dayInMonth) {
+        val emptyCells: Int = when (firstDayOfWeek.firstDayOfWeek) {
             1 -> 6
             2 -> 0
             3 -> 1
@@ -85,7 +86,7 @@ fun CalendarScreen() {
         }
         List(emptyCells) { "" } + (1..dayInMonth).map { it.toString() }
     }
-    Log.d("TAGAFTER", "$firstDayOfWeek")
+    Log.d("TAGBEFORE", "$firstDayOfWeek")
 
     Column(
         modifier = Modifier
@@ -114,7 +115,7 @@ fun CalendarScreen() {
             }
 
             Text(
-                text = monthName[month],
+                text = monthName[month.month],
                 fontSize = 20.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(Alignment.CenterVertically)
