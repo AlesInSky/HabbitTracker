@@ -25,7 +25,7 @@ class CalendarViewModel(
 ) : ViewModel() {
 
     private var _currentMonth = MutableStateFlow(getMonthUseCase.getStartMonth())
-    val currentMonth: MutableStateFlow<CalendarDateDomain> = _currentMonth
+    val currentMonth: StateFlow<CalendarDateDomain> = _currentMonth
 
     val calendarDay = 10
 
