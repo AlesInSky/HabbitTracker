@@ -38,8 +38,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.data.local.entity.HabitEntity
 import com.example.habbittracker.R
 import com.example.habbittracker.presentation.dialog.DialogHabbit
+import com.example.habbittracker.presentation.dialog.DialogNewHabit
 import com.example.habbittracker.presentation.navigation.BottomNav
 import com.example.habbittracker.presentation.viewmodel.CalendarViewModel
 import com.example.habbittracker.ui.theme.HabbitTrackerTheme
@@ -192,14 +194,16 @@ fun CalendarScreen() {
                 }
             )
         }
-//        if (showNewHabitDialog){
-//            DialogNewHabit(
-//                onDismissRequest = {showNewHabitDialog = false},
-//                onConfirmation = {
-//                    showNewHabitDialog = false
-//                }
-//                )
-//        }
+        if (showNewHabitDialog) {
+            DialogNewHabit(
+                onDismissRequest = { showNewHabitDialog = false },
+                habit = HabitEntity(),
+                onSave = { newHabit ->
+                    vm.addHabit(newHabit)
+                    showNewHabitDialog = false
+                }
+            )
+        }
     }
 }
 
