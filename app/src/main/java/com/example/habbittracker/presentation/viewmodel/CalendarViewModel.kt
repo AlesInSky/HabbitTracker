@@ -37,17 +37,8 @@ class CalendarViewModel(
 
 
     //Действия с изменением месяца в календаре
-    fun getMonth(): Int {
-        return _currentMonth.value.month
-    }
-
     fun getDayInMonth(): Int {
         return _currentMonth.value.dayInMonth
-    }
-
-    fun getFirstDayOfWeek(): Int {
-        val firstDay = _currentMonth.value.firstDayOfWeek
-        return firstDay
     }
 
     fun nextMonth() {
@@ -66,7 +57,8 @@ class CalendarViewModel(
         return _habitList.value
     }
 
-    private fun loadHabits() {
+
+    fun loadHabits() {
         viewModelScope.launch {
             // Загружаем в фоновом потоке IO
             val habits = withContext(Dispatchers.IO) {
@@ -76,19 +68,15 @@ class CalendarViewModel(
         }
     }
 
-    fun openEditDialog(calendar: CalendarEntity) {
-        _editCalendarHabit.value = calendar.copy()
+    init {
+        loadHabits()
     }
 
-    fun closeEditDialog() {
-        _editCalendarHabit.value = null
-    }
-
-    fun addHabit() {
+    fun addHabit(habit: HabitEntity) {
         viewModelScope.launch {
             val calendar = CalendarEntity()
             calendar.calendarDate = calendarDay.toString()
-            withContext(Dispatchers.IO){
+            withContext(Dispatchers.IO) {
                 calendarDao.insert(calendar)
             }
         }
