@@ -12,6 +12,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +20,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,12 +33,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.data.local.entity.HabitEntity
 import com.example.habbittracker.R
+import com.example.habbittracker.presentation.viewmodel.CalendarViewModel
 
 @Composable
 fun DialogNewHabit(
     habit: HabitEntity?,
     onDismissRequest: () -> Unit,
     onSave: (HabitEntity) -> Unit,
+    vm: CalendarViewModel
 ) {
     // Если нет привычки для редактирования - не показываем диалог
     if (habit == null) return
@@ -48,8 +52,10 @@ fun DialogNewHabit(
 
     val unitsStub = listOf("шт", "кг", "л", "мин", "раз")
 
+    // Для DropDown Menu
     var expanded by remember { mutableStateOf(false) }
-    var selectedUnit by remember { mutableStateOf(unitsStub.first()) }
+    var selectedUnit by remember { mutableStateOf<HabitEntity?>(null) }
+    val habitLoad by vm.habitList.collectAsState()
 
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
@@ -86,14 +92,25 @@ fun DialogNewHabit(
                         )
                     }
 
+                    Button(onClick = { expanded = true }) {
+                        Text(text = selectedUnit?.habitName?: "Выберите привычку")
+                    }
+
                     // Поле для названия
-                    OutlinedTextField(
-                        value = name,
-                        onValueChange = { name = it },
-                        label = { Text("Название привычки") },
-                        modifier = Modifier.fillMaxWidth().weight(1f),
-                        singleLine = true
-                    )
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false }
+                    ){
+                        habitLoad.forEach { habit ->
+                            androidx.compose.material3.DropdownMenuItem(
+                                text = { Text(habit.habitName) },
+                                onClick = {
+                                    selectedUnit = habit
+                                    expanded = false
+                                    name = habit.habitName
+                                })
+                        }
+                    }
                 }
 
                     // Поле для комментария

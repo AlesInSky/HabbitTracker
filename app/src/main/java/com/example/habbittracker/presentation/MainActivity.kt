@@ -198,6 +198,7 @@ fun CalendarScreen() {
             DialogNewHabit(
                 onDismissRequest = { showNewHabitDialog = false },
                 habit = HabitEntity(),
+                vm = vm,
                 onSave = { newHabit ->
                     vm.addHabit(newHabit)
                     showNewHabitDialog = false
