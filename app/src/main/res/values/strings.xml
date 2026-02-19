@@ -15,4 +15,14 @@
         <item>Ноябрь</item>
         <item>Декабрь</item>
     </string-array>
+
+    <string-array name="unit">
+        <item>Шт.</item>
+        <item>Кг.</item>
+        <item>Г.</item>
+        <item>ККал.</item>
+        <item>Кал.</item>
+        <item>Л.</item>
+        <item>Мл.</item>
+    </string-array>
 </resources>
