@@ -71,6 +71,7 @@ fun CalendarScreen() {
     val monthName = stringArrayResource(R.array.months)
     val month by vm.currentMonth.collectAsState()
     val dayInMonth = vm.getDayInMonth()
+    val year = vm.getYear()
     val firstDayOfWeek by vm.currentMonth.collectAsState()
     var showConfirmDialog by remember { mutableStateOf(false) }
     var showNewHabitDialog by remember { mutableStateOf(false) }
@@ -119,6 +120,12 @@ fun CalendarScreen() {
             Text(
                 text = monthName[month.month],
                 fontSize = 20.sp,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.align(Alignment.CenterVertically)
+            )
+            Text(
+                text = year.toString(),
+                fontSize = 10.sp,
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.align(Alignment.CenterVertically)
             )

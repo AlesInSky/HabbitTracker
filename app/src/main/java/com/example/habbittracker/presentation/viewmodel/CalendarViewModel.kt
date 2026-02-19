@@ -27,6 +27,9 @@ class CalendarViewModel(
     private var _currentMonth = MutableStateFlow(getMonthUseCase.getStartMonth())
     val currentMonth: StateFlow<CalendarDateDomain> = _currentMonth
 
+    private var _currentYear = MutableStateFlow(getMonthUseCase.getStartMonth())
+    val currentYear: StateFlow<CalendarDateDomain> = _currentYear
+
     val calendarDay = 10
 
     private val _editCalendarHabit = MutableStateFlow<CalendarEntity?>(null)
@@ -39,6 +42,10 @@ class CalendarViewModel(
     //Действия с изменением месяца в календаре
     fun getDayInMonth(): Int {
         return _currentMonth.value.dayInMonth
+    }
+
+    fun getYear(): Int {
+        return _currentMonth.value.year
     }
 
     fun nextMonth() {
