@@ -16,7 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-
+//Диалоговое окно при нажатии на дату в календаре
 @Composable
 fun DialogHabbit(
     onDismissRequest: () -> Unit,
