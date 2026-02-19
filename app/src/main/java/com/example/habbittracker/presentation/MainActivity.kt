@@ -41,7 +41,7 @@ import androidx.compose.ui.unit.sp
 import com.example.data.local.entity.HabitEntity
 import com.example.habbittracker.R
 import com.example.habbittracker.presentation.dialog.DialogHabbit
-import com.example.habbittracker.presentation.dialog.DialogNewHabit
+import com.example.habbittracker.presentation.dialog.DialogNewCalendarHabit
 import com.example.habbittracker.presentation.navigation.BottomNav
 import com.example.habbittracker.presentation.viewmodel.CalendarViewModel
 import com.example.habbittracker.ui.theme.HabbitTrackerTheme
@@ -202,7 +202,7 @@ fun CalendarScreen() {
             )
         }
         if (showNewHabitDialog) {
-            DialogNewHabit(
+            DialogNewCalendarHabit(
                 onDismissRequest = { showNewHabitDialog = false },
                 habit = HabitEntity(),
                 vm = vm,
