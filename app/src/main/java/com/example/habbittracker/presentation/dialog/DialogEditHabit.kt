@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.data.local.entity.HabitEntity
 import com.example.habbittracker.R
-
+//Диалоговое окно при редактировании привычки
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DialogEditHabit(
