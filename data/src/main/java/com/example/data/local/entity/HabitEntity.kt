@@ -12,8 +12,8 @@ data class HabitEntity(
     var habitName: String = "",
     @ColumnInfo(name = "habit_unit")
     var habitUnit: String = "",
-    @ColumnInfo(name = "habit_quantity")
-    var habitQuantity: Int = 0,
+    @ColumnInfo(name = "habit_price")
+    var habitPrice: Int = 0,
     @ColumnInfo(name = "habit_description")
     var habitDescription: String = "",
     @ColumnInfo(name = "habit_image")
