@@ -18,11 +18,13 @@
 
     <string-array name="unit">
         <item>Шт.</item>
+        <item>Ед.</item>
         <item>Кг.</item>
         <item>Г.</item>
         <item>ККал.</item>
         <item>Кал.</item>
         <item>Л.</item>
         <item>Мл.</item>
+        <item>Время</item>
     </string-array>
 </resources>
