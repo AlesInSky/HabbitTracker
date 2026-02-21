@@ -45,13 +45,11 @@ class HabitViewModel(val dao: HabitDao) : ViewModel() {
         _editHabit.value = null
     }
 
-    fun addHabit() {
+    fun addHabit(newHabit: HabitEntity) {
         viewModelScope.launch {
-            val habit = HabitEntity()
-            habit.habitName = habitName
             // Запускаем в IO диспетчере
             withContext(Dispatchers.IO) {
-                dao.insert(habit)
+                dao.insert(newHabit)
             }
             loadHabits()
         }
