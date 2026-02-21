@@ -11,12 +11,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.data.local.entity.HabitEntity
 import com.example.habbittracker.R
 import com.example.habbittracker.presentation.dialog.DialogEditHabit
+import com.example.habbittracker.presentation.dialog.DialogNewHabit
 import com.example.habbittracker.presentation.navigation.BottomNav
 import com.example.habbittracker.presentation.viewmodel.HabitViewModel
 import com.example.habbittracker.ui.theme.HabbitTrackerTheme
@@ -71,7 +73,8 @@ fun HabitList() {
             habit = editHabit,
             onDismissRequest = { vm.closeEditDialog() },
             onSave = { updateHabit: HabitEntity ->
-                vm.updateHabit(updateHabit) }
+                vm.updateHabit(updateHabit)
+            }
         )
     }
 }
@@ -93,6 +96,15 @@ fun HabitCard(habit: HabitEntity) {
                 .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            // Иконка
+            Icon(
+                painter = painterResource(id = habit.habitImage ?: R.drawable.card_add_icon),
+                tint = Color.Unspecified,
+                modifier = Modifier.size(48.dp),
+                contentDescription = "Habit icon"
+            )
+
+
             Text(text = habit.habitName, modifier = Modifier.weight(1f))
 
             // Кнопка редактирования
@@ -116,15 +128,17 @@ fun HabitCard(habit: HabitEntity) {
 @Composable
 fun AddHabitCard() {
     val vm: HabitViewModel = koinViewModel()
+    var showConfirmDialog by remember { mutableStateOf(false) }
 
     Card(
         onClick = {
-            vm.addHabit()
+            showConfirmDialog = true
         },
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
-    ) {
+    )
+    {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -134,6 +148,17 @@ fun AddHabitCard() {
                 contentDescription = "Add"
             )
         }
+    }
+    if (showConfirmDialog) {
+        DialogNewHabit(
+            habit = HabitEntity(),
+            onDismissRequest = { showConfirmDialog = false },
+            onSave = { newHabit ->
+                vm.addHabit(newHabit)
+                showConfirmDialog = false
+            },
+            vm = vm
+        )
     }
 }
 
