@@ -9,7 +9,7 @@ import com.example.data.local.dao.HabitDao
 import com.example.data.local.entity.CalendarEntity
 import com.example.data.local.entity.HabitEntity
 
-@Database(entities = [HabitEntity::class, CalendarEntity::class], version = 3, exportSchema = false)
+@Database(entities = [HabitEntity::class, CalendarEntity::class], version = 4, exportSchema = false)
 abstract class HabitAppDatabase : RoomDatabase() {
     abstract val habitDao: HabitDao
     abstract val calendarDao: CalendarDao

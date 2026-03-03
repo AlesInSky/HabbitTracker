@@ -10,6 +10,12 @@ data class CalendarEntity(
     var calendarId: Long = 0L,
     @ColumnInfo(name = "calendar_habit_id")
     var calendarHabitId: Long = 0L,
+    @ColumnInfo(name = "calendar_habit_price")
+    var calendarHabitPrice: Int = 0,
+    @ColumnInfo(name = "calendar_habit_quantity")
+    var calendarHabitQuantity: Float = 0F,
+    @ColumnInfo(name = "calendar_habit_description")
+    var calendarHabitDescription: String = "",
     @ColumnInfo(name = "calendar_date")
     var calendarDate: String = "2010-01-01"
 )
