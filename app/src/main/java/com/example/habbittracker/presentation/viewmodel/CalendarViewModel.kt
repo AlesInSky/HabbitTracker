@@ -1,5 +1,6 @@
 package com.example.habbittracker.presentation.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.local.dao.CalendarDao
@@ -16,7 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class CalendarViewModel(
+open class CalendarViewModel(
     getMonthUseCase: GetMonthUseCase,
     private val nextMonthUseCase: NextMonthUseCase,
     private val previousMonthUseCase: PreviousMonthUseCase,
@@ -27,17 +28,11 @@ class CalendarViewModel(
     private var _currentMonth = MutableStateFlow(getMonthUseCase.getStartMonth())
     val currentMonth: StateFlow<CalendarDateDomain> = _currentMonth
 
-    private var _currentYear = MutableStateFlow(getMonthUseCase.getStartMonth())
-    val currentYear: StateFlow<CalendarDateDomain> = _currentYear
-
-    val calendarDay = 10
-
-    private val _editCalendarHabit = MutableStateFlow<CalendarEntity?>(null)
-    val editCalendarHabit: StateFlow<CalendarEntity?> = _editCalendarHabit
+    private var _currentDate = MutableStateFlow(getMonthUseCase.getStartMonth())
+    val currentDate: StateFlow<CalendarDateDomain> = _currentDate
 
     private val _habitList = MutableStateFlow<List<HabitEntity>>(emptyList())
     val habitList: StateFlow<List<HabitEntity>> = _habitList
-
 
     //Действия с изменением месяца в календаре
     fun getDayInMonth(): Int {
@@ -46,6 +41,12 @@ class CalendarViewModel(
 
     fun getYear(): Int {
         return _currentMonth.value.year
+    }
+
+    fun getDate(date: Int): Int {
+        _currentDate.value = _currentDate.value.copy(date = date)
+        Log.d("ADD3","${_currentDate.value.date}")
+        return _currentDate.value.date
     }
 
     fun nextMonth() {
@@ -64,7 +65,6 @@ class CalendarViewModel(
         return _habitList.value
     }
 
-
     fun loadHabits() {
         viewModelScope.launch {
             // Загружаем в фоновом потоке IO
@@ -79,12 +79,10 @@ class CalendarViewModel(
         loadHabits()
     }
 
-    fun addHabit(habit: HabitEntity) {
+    fun addHabit(habit: CalendarEntity) {
         viewModelScope.launch {
-            val calendar = CalendarEntity()
-            calendar.calendarDate = calendarDay.toString()
             withContext(Dispatchers.IO) {
-                calendarDao.insert(calendar)
+                calendarDao.insert(habit)
             }
         }
     }

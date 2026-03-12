@@ -70,9 +70,11 @@ fun CalendarScreen() {
     val vm: CalendarViewModel = koinViewModel()
     val monthName = stringArrayResource(R.array.months)
     val month by vm.currentMonth.collectAsState()
+    val firstDayOfWeek by vm.currentMonth.collectAsState()
+    var date = 1
+
     val dayInMonth = vm.getDayInMonth()
     val year = vm.getYear()
-    val firstDayOfWeek by vm.currentMonth.collectAsState()
     var showConfirmDialog by remember { mutableStateOf(false) }
     var showNewHabitDialog by remember { mutableStateOf(false) }
 
@@ -169,7 +171,11 @@ fun CalendarScreen() {
             items(calendarCells) { day ->
                 if (day.isNotEmpty()) {
                     Button(
-                        onClick = { showConfirmDialog = true },
+                        onClick = {
+                            vm.getDate(day.toInt())
+
+                            showConfirmDialog = true
+                                  },
                         modifier = Modifier
                             .padding(4.dp)
                             .size(48.dp),
@@ -204,6 +210,7 @@ fun CalendarScreen() {
         if (showNewHabitDialog) {
             DialogNewCalendarHabit(
                 onDismissRequest = { showNewHabitDialog = false },
+                date = month,
                 habit = HabitEntity(),
                 vm = vm,
                 onSave = { newHabit ->

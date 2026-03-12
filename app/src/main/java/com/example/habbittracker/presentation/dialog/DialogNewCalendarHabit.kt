@@ -1,13 +1,17 @@
 package com.example.habbittracker.presentation.dialog
 
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
@@ -23,46 +27,65 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import com.example.data.local.entity.CalendarEntity
 import com.example.data.local.entity.HabitEntity
+import com.example.domain.models.CalendarDateDomain
 import com.example.habbittracker.R
 import com.example.habbittracker.presentation.viewmodel.CalendarViewModel
 
 //Диалоговое окно при добавлении привычки в дату календаря
 @Composable
 fun DialogNewCalendarHabit(
+    date: CalendarDateDomain,
     habit: HabitEntity?,
     onDismissRequest: () -> Unit,
-    onSave: (HabitEntity) -> Unit,
+    onSave: (CalendarEntity) -> Unit,
     vm: CalendarViewModel,
 ) {
     // Если нет привычки для редактирования - не показываем диалог
     if (habit == null) return
-
-    // Локальные состояния для редактирования
-    var name by remember { mutableStateOf(habit.habitName) }
-    var description by remember { mutableStateOf(habit.habitDescription) }
-
-
 
     // Для DropDown Menu
     var expanded by remember { mutableStateOf(false) }
     var selectedUnit by remember { mutableStateOf<HabitEntity?>(null) }
     val habitLoad by vm.habitList.collectAsState()
 
+    // Локальные состояния для редактирования
+    var habitId by remember { mutableLongStateOf(habit.habitId) }
+    var name by remember { mutableStateOf(habit.habitName) }
+    var price by remember { mutableIntStateOf(habit.habitPrice) }
+    var quantity = 0
+    var description by remember { mutableStateOf(habit.habitDescription) }
+
+    //Локальные состояния для ввода
+    var priceText by remember { mutableStateOf("0") }
+    var quantityText by remember { mutableStateOf("1") }
+    var quantityError by remember { mutableStateOf(false) }
+    var priceError by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+    //Дата
+    val dateYear = date.year
+    val dateMonth = date.month
+    val dateDay = vm.currentDate.collectAsState().value.date
+    val getDate = "${dateYear}-${dateMonth}-${dateDay}"
+
     Dialog(onDismissRequest = onDismissRequest) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(400.dp)  // Больше места для содержимого
+                .height(500.dp)  // Больше места для содержимого
                 .padding(10.dp),
             shape = MaterialTheme.shapes.large,
         ) {
@@ -75,7 +98,7 @@ fun DialogNewCalendarHabit(
             ) {
                 // Заголовок
                 Text(
-                    text = "Добавить привычку",
+                    text = "Новая привычка",
                     style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
@@ -83,10 +106,12 @@ fun DialogNewCalendarHabit(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     // Список иконок
                     IconButton(
-                        onClick = { /*selectedImage = true*/ }
+                        onClick = { }
                     ) {
                         Icon(
-                            painter = painterResource(id = R.drawable.card_add_icon),
+                            painter = painterResource(
+                                id = selectedUnit?.habitImage ?: R.drawable.card_add_icon
+                            ),
                             contentDescription = "Выбор иконки",
                             tint = Color.Unspecified,
                             modifier = Modifier.size(24.dp)
@@ -96,9 +121,7 @@ fun DialogNewCalendarHabit(
                     Button(
                         onClick = { expanded = true },
                         modifier = Modifier.fillMaxSize()
-                    ) {
-                        Text(text = selectedUnit?.habitName ?: "Выберите привычку")
-                    }
+                    ) { Text(text = selectedUnit?.habitName ?: "Выберите привычку") }
 
                     // Поле для названия
                     DropdownMenu(
@@ -111,13 +134,59 @@ fun DialogNewCalendarHabit(
                                 onClick = {
                                     selectedUnit = habit
                                     expanded = false
-                                    name = habit.habitName
-                                })
+                                }
+                            )
                         }
                     }
                 }
 
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Поле для ед.изм
+                    Button(
+                        onClick = {},
+                        enabled = false,
+                        modifier = Modifier.width(104.dp)
+                    )
+                    { Text(selectedUnit?.habitUnit ?: "Ед.изм.") }
 
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    // Поле для количества
+                    OutlinedTextField(
+                        value = quantityText,
+                        onValueChange = {
+                            quantityText = it
+                            quantityError = false
+                        },
+                        label = { Text("Количество") },
+                        modifier = Modifier.weight(1f),
+                        isError = quantityError,
+                        singleLine = true
+                    )
+                }
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    // Дата
+                    Button(onClick = {}, enabled = false, modifier = Modifier.width(104.dp)) {
+                        Text(getDate)
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    // Поле для цены
+                    // Надо реализовать изменение цены
+                    OutlinedTextField(
+                        value = selectedUnit?.habitPrice.toString(),
+                        onValueChange = { newPriceText ->
+                            selectedUnit?.habitPrice = newPriceText.toInt()
+                            priceError = false
+                        },
+                        label = { Text("Стоимость") },
+                        modifier = Modifier.weight(1f),
+                        isError = priceError,
+                        singleLine = true
+                    )
+                }
 
                 // Поле для комментария
                 OutlinedTextField(
@@ -135,22 +204,37 @@ fun DialogNewCalendarHabit(
                         .padding(top = 16.dp),
                     horizontalArrangement = Arrangement.End
                 ) {
-//                        TextButton(
-//                            onClick = onDismissRequest,
-//                            modifier = Modifier.padding(end = 8.dp)
-//                        ) {
-//                            Text("Отмена")
-//                        }
+                    Button(
+                        onClick = onDismissRequest,
+                        modifier = Modifier.padding(end = 8.dp)
+                    ) {
+                        Text("Отмена")
+                    }
 
                     Button(
                         onClick = {
-                            // Создаем обновленную привычку
-                            val updatedHabit = habit.copy(
-                                habitName = name,
-                                habitDescription = description,
-                                habitImage = R.drawable.card_add_icon
-                            )
-                            onSave(updatedHabit)
+                            if (quantityText.isBlank() && priceText.isBlank()) {
+                                quantityError = true
+                                Toast.makeText(context, "Введите количество", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+                            if (priceText.isBlank()) {
+                                priceError = true
+                                Toast.makeText(context, "Введите стоимость", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+                            else {
+                                // Создаем привычку на день недели
+                                val updatedCalendarHabit = CalendarEntity(
+                                    calendarHabitId = selectedUnit?.habitId ?: -1,
+                                    calendarHabitPrice = selectedUnit?.habitPrice ?: -1,
+                                    calendarHabitQuantity = quantity.toFloat(),
+                                    calendarHabitDescription = description,
+                                    calendarDate = getDate
+                                )
+                                Log.d("ADD", updatedCalendarHabit.toString())
+                                onSave(updatedCalendarHabit)
+                            }
                         }, modifier = Modifier.fillMaxSize()
                     ) {
                         Text("Сохранить")
