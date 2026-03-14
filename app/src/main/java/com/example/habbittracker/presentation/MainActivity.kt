@@ -33,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -71,9 +72,8 @@ fun CalendarScreen() {
     val monthName = stringArrayResource(R.array.months)
     val month by vm.currentMonth.collectAsState()
     val firstDayOfWeek by vm.currentMonth.collectAsState()
-    var date = 1
-
     val dayInMonth = vm.getDayInMonth()
+    val habitInMonth by vm.habitListForDate.collectAsState()
     val year = vm.getYear()
     var showConfirmDialog by remember { mutableStateOf(false) }
     var showNewHabitDialog by remember { mutableStateOf(false) }
@@ -170,16 +170,21 @@ fun CalendarScreen() {
 
             items(calendarCells) { day ->
                 if (day.isNotEmpty()) {
+                    val dayInt = day.toInt()
+                    val isHabitDay = habitInMonth.contains(dayInt)
                     Button(
                         onClick = {
                             vm.getDate(day.toInt())
-
                             showConfirmDialog = true
                                   },
                         modifier = Modifier
                             .padding(4.dp)
                             .size(48.dp),
-                        contentPadding = PaddingValues(0.dp)
+                        contentPadding = PaddingValues(0.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = if (isHabitDay) Color.Red else MaterialTheme.colorScheme.primary
+                                )
+
                     ) {
                         if (day.isNotEmpty()) {
                             Text(

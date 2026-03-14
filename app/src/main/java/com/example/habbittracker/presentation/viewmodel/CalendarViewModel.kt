@@ -34,6 +34,32 @@ open class CalendarViewModel(
     private val _habitList = MutableStateFlow<List<HabitEntity>>(emptyList())
     val habitList: StateFlow<List<HabitEntity>> = _habitList
 
+    //Проверка наличия привычки на день недели
+    private val _habitListForDate = MutableStateFlow<List<Int>>(emptyList())
+    val habitListForDate: StateFlow<List<Int>> = _habitListForDate
+
+    fun getHabitDay() {
+        viewModelScope.launch {
+            val year = _currentMonth.value.year
+            val month = _currentMonth.value.month
+            val dayInMonth = _currentMonth.value.dayInMonth
+            var date = 1
+            val habitList = mutableListOf<Int>()
+
+            while (date <= dayInMonth) {
+                val currentDate = "${year}-${month}-${date}"
+                val getHabitForDate = calendarDao.getFromDate(calendarDate = currentDate)
+                if (getHabitForDate.isNotEmpty()){
+                    habitList.add("$date".toInt())
+                }
+                date++
+            }
+            _habitListForDate.value = habitList
+            Log.d("ADD2","$_habitListForDate")
+            Log.d("ADD3","$habitList")
+        }
+    }
+
     //Действия с изменением месяца в календаре
     fun getDayInMonth(): Int {
         return _currentMonth.value.dayInMonth
@@ -45,7 +71,6 @@ open class CalendarViewModel(
 
     fun getDate(date: Int): Int {
         _currentDate.value = _currentDate.value.copy(date = date)
-        Log.d("ADD3","${_currentDate.value.date}")
         return _currentDate.value.date
     }
 
@@ -61,10 +86,6 @@ open class CalendarViewModel(
 
     //Действия с добавлением привычек в календарь
 
-    fun getHabitList(): List<HabitEntity> {
-        return _habitList.value
-    }
-
     fun loadHabits() {
         viewModelScope.launch {
             // Загружаем в фоновом потоке IO
@@ -77,6 +98,7 @@ open class CalendarViewModel(
 
     init {
         loadHabits()
+        getHabitDay()
     }
 
     fun addHabit(habit: CalendarEntity) {
