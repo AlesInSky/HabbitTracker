@@ -2,7 +2,6 @@ package com.example.habbittracker.presentation
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -41,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.data.local.entity.HabitEntity
 import com.example.habbittracker.R
+import com.example.habbittracker.presentation.dialog.DialogCalendarHabitList
 import com.example.habbittracker.presentation.dialog.DialogHabbit
 import com.example.habbittracker.presentation.dialog.DialogNewCalendarHabit
 import com.example.habbittracker.presentation.navigation.BottomNav
@@ -73,10 +73,11 @@ fun CalendarScreen() {
     val month by vm.currentMonth.collectAsState()
     val firstDayOfWeek by vm.currentMonth.collectAsState()
     val dayInMonth = vm.getDayInMonth()
-    val habitInMonth by vm.habitListForDate.collectAsState()
+    val habitInData by vm.habitListForDate.collectAsState()
     val year = vm.getYear()
     var showConfirmDialog by remember { mutableStateOf(false) }
     var showNewHabitDialog by remember { mutableStateOf(false) }
+    var showHabitListDialog by remember { mutableStateOf(false) }
 
     val calendarCells = remember(firstDayOfWeek.firstDayOfWeek, dayInMonth) {
         val emptyCells: Int = when (firstDayOfWeek.firstDayOfWeek) {
@@ -91,7 +92,6 @@ fun CalendarScreen() {
         }
         List(emptyCells) { "" } + (1..dayInMonth).map { it.toString() }
     }
-    Log.d("TAGBEFORE", "$firstDayOfWeek")
 
     Column(
         modifier = Modifier
@@ -171,18 +171,19 @@ fun CalendarScreen() {
             items(calendarCells) { day ->
                 if (day.isNotEmpty()) {
                     val dayInt = day.toInt()
-                    val isHabitDay = dayInt in habitInMonth
+                    val habitThisDate = dayInt in habitInData
                     Button(
                         onClick = {
                             vm.getDate(day.toInt())
-                            showConfirmDialog = true
+                            if (habitThisDate) showHabitListDialog = true
+                            else showConfirmDialog = true
                         },
                         modifier = Modifier
                             .padding(4.dp)
                             .size(48.dp),
                         contentPadding = PaddingValues(0.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = if (isHabitDay) Color.Red else MaterialTheme.colorScheme.primary
+                            containerColor = if (habitThisDate) Color.Red else MaterialTheme.colorScheme.primary
                         )
 
                     ) {
@@ -206,9 +207,9 @@ fun CalendarScreen() {
             DialogHabbit(
                 onDismissRequest = { showConfirmDialog = false },
                 onConfirmation = {
-                    // действие на Yes
-                    showConfirmDialog = false
-                    showNewHabitDialog = true
+                        // действие на Yes
+                        showConfirmDialog = false
+                        showNewHabitDialog = true
                 }
             )
         }
@@ -222,6 +223,15 @@ fun CalendarScreen() {
                     vm.addHabit(newHabit)
                     showNewHabitDialog = false
                 }
+            )
+        }
+
+        if (showHabitListDialog){
+            vm.loadHabitList()
+            DialogCalendarHabitList(
+                onDismissRequest = { showHabitListDialog = false },
+                vm = vm,
+                date = month,
             )
         }
     }

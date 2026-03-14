@@ -20,7 +20,7 @@ interface CalendarDao {
     suspend fun delete(habit: CalendarEntity)
 
     @Query("SELECT * FROM calendar_habits WHERE calendar_date = :calendarDate")
-    suspend fun getFromDate(calendarDate: String): List<CalendarEntity?>
+    suspend fun getFromDate(calendarDate: String): List<CalendarEntity>
 
     @Query("SELECT * FROM calendar_habits ORDER BY calendarId DESC")
     fun getAll(): List<CalendarEntity>

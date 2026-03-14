@@ -24,4 +24,7 @@ interface HabitDao {
 
     @Query("SELECT * FROM habits ORDER BY habitId DESC")
     fun getAll(): List<HabitEntity>
+
+    @Query("SELECT * FROM habits WHERE habitId IN (:habitIds)")
+    suspend fun getHabitsByIds(habitIds: List<Long>): List<HabitEntity>
 }
