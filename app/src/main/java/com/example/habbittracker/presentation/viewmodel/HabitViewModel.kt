@@ -11,8 +11,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class HabitViewModel(val dao: HabitDao) : ViewModel() {
-    val habitName = "New habit"
-
     private val _habitList = MutableStateFlow<List<HabitEntity>>(emptyList())
     val habitList: StateFlow<List<HabitEntity>> = _habitList
 
@@ -23,13 +21,8 @@ class HabitViewModel(val dao: HabitDao) : ViewModel() {
         loadHabits()
     }
 
-    fun getHabitList(): List<HabitEntity> {
-        return _habitList.value
-    }
-
     private fun loadHabits() {
         viewModelScope.launch {
-            // Загружаем в фоновом потоке IO
             val habits = withContext(Dispatchers.IO) {
                 dao.getAll()
             }
@@ -47,7 +40,6 @@ class HabitViewModel(val dao: HabitDao) : ViewModel() {
 
     fun addHabit(newHabit: HabitEntity) {
         viewModelScope.launch {
-            // Запускаем в IO диспетчере
             withContext(Dispatchers.IO) {
                 dao.insert(newHabit)
             }
@@ -67,7 +59,6 @@ class HabitViewModel(val dao: HabitDao) : ViewModel() {
 
     fun deleteHabit(habit: HabitEntity) {
         viewModelScope.launch {
-            // Запускаем в IO диспетчере
             withContext(Dispatchers.IO) {
                 dao.delete(habit)
             }
