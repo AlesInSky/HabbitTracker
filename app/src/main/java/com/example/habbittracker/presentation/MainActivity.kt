@@ -171,19 +171,19 @@ fun CalendarScreen() {
             items(calendarCells) { day ->
                 if (day.isNotEmpty()) {
                     val dayInt = day.toInt()
-                    val isHabitDay = habitInMonth.contains(dayInt)
+                    val isHabitDay = dayInt in habitInMonth
                     Button(
                         onClick = {
                             vm.getDate(day.toInt())
                             showConfirmDialog = true
-                                  },
+                        },
                         modifier = Modifier
                             .padding(4.dp)
                             .size(48.dp),
                         contentPadding = PaddingValues(0.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = if (isHabitDay) Color.Red else MaterialTheme.colorScheme.primary
-                                )
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = if (isHabitDay) Color.Red else MaterialTheme.colorScheme.primary
+                        )
 
                     ) {
                         if (day.isNotEmpty()) {
