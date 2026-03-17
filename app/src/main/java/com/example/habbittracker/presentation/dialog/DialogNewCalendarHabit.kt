@@ -60,15 +60,16 @@ fun DialogNewCalendarHabit(
     val habitLoad by vm.habitList.collectAsState()
 
     // Локальные состояния для редактирования
-    val quantity = 0
     var description by remember { mutableStateOf(habit.habitDescription) }
 
     //Локальные состояния для ввода
-    var priceText by remember { mutableStateOf("0") }
-    var quantityText by remember { mutableStateOf("1") }
-    var quantityError by remember { mutableStateOf(false) }
-    var priceError by remember { mutableStateOf(false) }
     val context = LocalContext.current
+
+    var priceText by remember { mutableStateOf("") }
+    var quantityText by remember { mutableStateOf("") }
+
+    var priceError by remember { mutableStateOf(false) }
+    var quantityError by remember { mutableStateOf(false) }
 
     //Дата
     val dateYear = date.year
@@ -128,6 +129,8 @@ fun DialogNewCalendarHabit(
                                 text = { Text(habit.habitName) },
                                 onClick = {
                                     selectedUnit = habit
+                                    priceText = habit.habitPrice.toString()
+                                    Log.d("DEBUG", "1. Выбрана привычка: ${habit.habitName}, цена установлена: $priceText")
                                     expanded = false
                                 }
                             )
@@ -149,9 +152,11 @@ fun DialogNewCalendarHabit(
                     // Поле для количества
                     OutlinedTextField(
                         value = quantityText,
-                        onValueChange = {
-                            quantityText = it
-                            quantityError = false
+                        onValueChange = { newText ->
+                            if (newText.all { it.isDigit() } || newText.isEmpty()) {
+                                quantityText = newText
+                                quantityError = false
+                            }
                         },
                         label = { Text("Количество") },
                         modifier = Modifier.weight(1f),
@@ -169,12 +174,13 @@ fun DialogNewCalendarHabit(
                     Spacer(modifier = Modifier.width(8.dp))
 
                     // Поле для цены
-                    // Надо реализовать изменение цены
                     OutlinedTextField(
-                        value = selectedUnit?.habitPrice.toString(),
-                        onValueChange = { newPriceText ->
-                            selectedUnit?.habitPrice = newPriceText.toInt()
-                            priceError = false
+                        value = priceText,
+                        onValueChange = { newText ->
+                            if (newText.all { it.isDigit() } || newText.isEmpty()) {
+                                priceText = newText
+                                priceError = false
+                            }
                         },
                         label = { Text("Стоимость") },
                         modifier = Modifier.weight(1f),
@@ -214,14 +220,12 @@ fun DialogNewCalendarHabit(
                                 Toast.makeText(context, "Выберите привычку", Toast.LENGTH_SHORT)
                                     .show()
                                 hasError = true
-                            }
-                            else if (quantityText.isBlank() && priceText.isBlank()) {
+                            } else if (quantityText.isBlank()) {
                                 quantityError = true
                                 Toast.makeText(context, "Введите количество", Toast.LENGTH_SHORT)
                                     .show()
                                 hasError = true
-                            }
-                            else if (priceText.isBlank()) {
+                            } else if (priceText.isBlank()) {
                                 priceError = true
                                 Toast.makeText(context, "Введите стоимость", Toast.LENGTH_SHORT)
                                     .show()
@@ -231,12 +235,11 @@ fun DialogNewCalendarHabit(
                                 // Создаем привычку на день недели
                                 val updatedCalendarHabit = CalendarEntity(
                                     calendarHabitId = selectedUnit?.habitId ?: -1,
-                                    calendarHabitPrice = selectedUnit?.habitPrice ?: -1,
-                                    calendarHabitQuantity = quantity.toFloat(),
+                                    calendarHabitPrice = priceText.toInt(),
+                                    calendarHabitQuantity = quantityText.toFloat(),
                                     calendarHabitDescription = description,
                                     calendarDate = getDate
                                 )
-                                Log.d("ADD", updatedCalendarHabit.toString())
                                 onSave(updatedCalendarHabit)
                             }
                         }, modifier = Modifier.fillMaxSize()
