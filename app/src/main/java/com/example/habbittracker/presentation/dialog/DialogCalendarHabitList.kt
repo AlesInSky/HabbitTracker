@@ -42,7 +42,7 @@ import org.koin.androidx.compose.koinViewModel
 fun DialogCalendarHabitList(
     onDismissRequest: () -> Unit,
     vm: CalendarViewModel,
-    date: CalendarDateDomain
+    date: CalendarDateDomain,
 ) {
     val habitList by vm.habitListFromDate.collectAsState()
     val vm: CalendarViewModel = koinViewModel()
@@ -118,18 +118,19 @@ fun HabitCard(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
+                //Наименование
                 Text(
                     text = habit["habit_name"] as? String ?: "Без названия",
                     style = MaterialTheme.typography.titleMedium
                 )
-
+                //Количество
                 Text(
                     text = "Количество: ${habit["calendar_habit_quantity"]} ${habit["habit_unit"] ?: ""}",
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-
-                habit["habit_price"]?.let { price ->
+                //Цена
+                habit["calendar_habit_price"]?.let { price ->
                     if (price != 0) {
                         Text(
                             text = "Цена: $price",
@@ -141,16 +142,21 @@ fun HabitCard(
             }
 
             // Редактирование привычки
-            IconButton(onClick =
-                { val calendarHabit = CalendarEntity(
-                    calendarId = (habit["calendarId"] as? Long) ?: 0L,
-                    calendarHabitId = (habit["calendar_habit_id"] as? Long) ?: 0L,
-                    calendarHabitPrice = (habit["calendar_habit_price"] as? Int) ?: 0,
-                    calendarHabitQuantity = (habit["calendar_habit_quantity"] as? Float) ?: 0f,
-                    calendarHabitDescription = (habit["calendar_habit_description"] as? String) ?: "",
-                    calendarDate = (habit["calendar_date"] as? String) ?: ""
-                )
-                    vm.editHabit(calendarHabit) }
+            IconButton(
+                onClick =
+                    {
+                        val calendarHabit = CalendarEntity(
+                            calendarId = (habit["calendarId"] as? Long) ?: 0L,
+                            calendarHabitId = (habit["calendar_habit_id"] as? Long) ?: 0L,
+                            calendarHabitPrice = (habit["calendar_habit_price"] as? Int) ?: 0,
+                            calendarHabitQuantity = (habit["calendar_habit_quantity"] as? Float)
+                                ?: 0f,
+                            calendarHabitDescription = (habit["calendar_habit_description"] as? String)
+                                ?: "",
+                            calendarDate = (habit["calendar_date"] as? String) ?: ""
+                        )
+                        vm.deleteHabit(calendarHabit)
+                    }
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.edit_icon),
@@ -160,16 +166,21 @@ fun HabitCard(
             }
 
             // Удаление привычки
-            IconButton(onClick =
-                { val calendarHabit = CalendarEntity(
-                    calendarId = (habit["calendarId"] as? Long) ?: 0L,
-                    calendarHabitId = (habit["calendar_habit_id"] as? Long) ?: 0L,
-                    calendarHabitPrice = (habit["calendar_habit_price"] as? Int) ?: 0,
-                    calendarHabitQuantity = (habit["calendar_habit_quantity"] as? Float) ?: 0f,
-                    calendarHabitDescription = (habit["calendar_habit_description"] as? String) ?: "",
-                    calendarDate = (habit["calendar_date"] as? String) ?: ""
-                )
-                    vm.deleteHabit(calendarHabit) }
+            IconButton(
+                onClick =
+                    {
+                        val calendarHabit = CalendarEntity(
+                            calendarId = (habit["calendarId"] as? Long) ?: 0L,
+                            calendarHabitId = (habit["calendar_habit_id"] as? Long) ?: 0L,
+                            calendarHabitPrice = (habit["calendar_habit_price"] as? Int) ?: 0,
+                            calendarHabitQuantity = (habit["calendar_habit_quantity"] as? Float)
+                                ?: 0f,
+                            calendarHabitDescription = (habit["calendar_habit_description"] as? String)
+                                ?: "",
+                            calendarDate = (habit["calendar_date"] as? String) ?: ""
+                        )
+                        vm.deleteHabit(calendarHabit)
+                    }
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.delete_icon),
@@ -183,14 +194,14 @@ fun HabitCard(
 
 @Composable
 fun EditHabit(
-    date: CalendarDateDomain
-){
+    date: CalendarDateDomain,
+) {
 
 }
 
 @Composable
 fun AddHabitCard(
-    date: CalendarDateDomain
+    date: CalendarDateDomain,
 ) {
     val vm: CalendarViewModel = koinViewModel()
     var showNewHabitDialog by remember { mutableStateOf(false) }
