@@ -26,8 +26,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -62,10 +60,7 @@ fun DialogNewCalendarHabit(
     val habitLoad by vm.habitList.collectAsState()
 
     // Локальные состояния для редактирования
-    var habitId by remember { mutableLongStateOf(habit.habitId) }
-    var name by remember { mutableStateOf(habit.habitName) }
-    var price by remember { mutableIntStateOf(habit.habitPrice) }
-    var quantity = 0
+    val quantity = 0
     var description by remember { mutableStateOf(habit.habitDescription) }
 
     //Локальные состояния для ввода
