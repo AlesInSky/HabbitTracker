@@ -140,16 +140,37 @@ fun HabitCard(
                 }
             }
 
-            // Дополнительная информация или иконка
-            IconButton(onClick = { val calendarHabit = CalendarEntity(
-                calendarId = (habit["calendarId"] as? Long) ?: 0L,
-                calendarHabitId = (habit["calendar_habit_id"] as? Long) ?: 0L,
-                calendarHabitPrice = (habit["calendar_habit_price"] as? Int) ?: 0,
-                calendarHabitQuantity = (habit["calendar_habit_quantity"] as? Float) ?: 0f,
-                calendarHabitDescription = (habit["calendar_habit_description"] as? String) ?: "",
-                calendarDate = (habit["calendar_date"] as? String) ?: ""
-            )
-                vm.deleteHabit(calendarHabit) }) {
+            // Редактирование привычки
+            IconButton(onClick =
+                { val calendarHabit = CalendarEntity(
+                    calendarId = (habit["calendarId"] as? Long) ?: 0L,
+                    calendarHabitId = (habit["calendar_habit_id"] as? Long) ?: 0L,
+                    calendarHabitPrice = (habit["calendar_habit_price"] as? Int) ?: 0,
+                    calendarHabitQuantity = (habit["calendar_habit_quantity"] as? Float) ?: 0f,
+                    calendarHabitDescription = (habit["calendar_habit_description"] as? String) ?: "",
+                    calendarDate = (habit["calendar_date"] as? String) ?: ""
+                )
+                    vm.editHabit(calendarHabit) }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.edit_icon),
+                    contentDescription = "Edit",
+                    tint = Color.Unspecified
+                )
+            }
+
+            // Удаление привычки
+            IconButton(onClick =
+                { val calendarHabit = CalendarEntity(
+                    calendarId = (habit["calendarId"] as? Long) ?: 0L,
+                    calendarHabitId = (habit["calendar_habit_id"] as? Long) ?: 0L,
+                    calendarHabitPrice = (habit["calendar_habit_price"] as? Int) ?: 0,
+                    calendarHabitQuantity = (habit["calendar_habit_quantity"] as? Float) ?: 0f,
+                    calendarHabitDescription = (habit["calendar_habit_description"] as? String) ?: "",
+                    calendarDate = (habit["calendar_date"] as? String) ?: ""
+                )
+                    vm.deleteHabit(calendarHabit) }
+            ) {
                 Icon(
                     painter = painterResource(id = R.drawable.delete_icon),
                     contentDescription = "Delete",
@@ -158,6 +179,13 @@ fun HabitCard(
             }
         }
     }
+}
+
+@Composable
+fun EditHabit(
+    date: CalendarDateDomain
+){
+
 }
 
 @Composable
