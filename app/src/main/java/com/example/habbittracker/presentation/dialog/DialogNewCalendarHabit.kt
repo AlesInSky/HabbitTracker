@@ -213,17 +213,26 @@ fun DialogNewCalendarHabit(
 
                     Button(
                         onClick = {
-                            if (quantityText.isBlank() && priceText.isBlank()) {
+                            var hasError = false
+
+                            if (selectedUnit?.habitName.isNullOrEmpty()) {
+                                Toast.makeText(context, "Выберите привычку", Toast.LENGTH_SHORT)
+                                    .show()
+                                hasError = true
+                            }
+                            else if (quantityText.isBlank() && priceText.isBlank()) {
                                 quantityError = true
                                 Toast.makeText(context, "Введите количество", Toast.LENGTH_SHORT)
                                     .show()
+                                hasError = true
                             }
-                            if (priceText.isBlank()) {
+                            else if (priceText.isBlank()) {
                                 priceError = true
                                 Toast.makeText(context, "Введите стоимость", Toast.LENGTH_SHORT)
                                     .show()
+                                hasError = true
                             }
-                            else {
+                            if (!hasError) {
                                 // Создаем привычку на день недели
                                 val updatedCalendarHabit = CalendarEntity(
                                     calendarHabitId = selectedUnit?.habitId ?: -1,
