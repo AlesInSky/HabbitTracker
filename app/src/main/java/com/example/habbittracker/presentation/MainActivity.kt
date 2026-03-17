@@ -214,6 +214,7 @@ fun CalendarScreen() {
             )
         }
         if (showNewHabitDialog) {
+            showHabitListDialog = false
             DialogNewCalendarHabit(
                 onDismissRequest = { showNewHabitDialog = false },
                 date = month,
