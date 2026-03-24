@@ -1,4 +1,4 @@
-package com.example.habbittracker.presentation.dialog
+package com.example.habbittracker.presentation.dialog.dialogHabitlist
 
 import com.example.habbittracker.R
 import androidx.compose.foundation.layout.Arrangement

@@ -1,4 +1,4 @@
-package com.example.habbittracker.presentation.dialog
+package com.example.habbittracker.presentation.dialog.dialogCalendar
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,6 +38,7 @@ import com.example.habbittracker.R
 import com.example.habbittracker.presentation.viewmodel.CalendarViewModel
 import org.koin.androidx.compose.koinViewModel
 
+//Диалоговое окно со списком введенных привычек
 @Composable
 fun DialogCalendarHabitList(
     onDismissRequest: () -> Unit,
@@ -92,6 +93,10 @@ fun HabitCard(
     habit: Map<String, Any?>,
     vm: CalendarViewModel = koinViewModel(),
 ) {
+
+    var showEditHabitDialog = false
+
+
     Card(
         onClick = { /* Переход к деталям */ },
         modifier = Modifier.fillMaxWidth(),
@@ -155,8 +160,10 @@ fun HabitCard(
                                 ?: "",
                             calendarDate = (habit["calendar_date"] as? String) ?: ""
                         )
+                        showEditHabitDialog = true
                         vm.deleteHabit(calendarHabit)
                     }
+
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.edit_icon),
@@ -164,6 +171,7 @@ fun HabitCard(
                     tint = Color.Unspecified
                 )
             }
+
 
             // Удаление привычки
             IconButton(
@@ -190,13 +198,6 @@ fun HabitCard(
             }
         }
     }
-}
-
-@Composable
-fun EditHabit(
-    date: CalendarDateDomain,
-) {
-
 }
 
 @Composable

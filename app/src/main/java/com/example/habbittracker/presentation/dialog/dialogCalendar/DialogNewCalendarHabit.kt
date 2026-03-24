@@ -1,4 +1,4 @@
-package com.example.habbittracker.presentation.dialog
+package com.example.habbittracker.presentation.dialog.dialogCalendar
 
 import android.util.Log
 import android.widget.Toast
