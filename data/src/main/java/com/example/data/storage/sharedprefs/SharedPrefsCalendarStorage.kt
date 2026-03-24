@@ -21,7 +21,7 @@ class SharedPrefsCalendarStorage(context: Context) : CalendarStorage {
         sharedPreferences.edit {
             putInt(YEAR, calendar.year)
             putInt(MONTH, calendar.month)
-            putInt(DATE, calendar.date)
+            putInt(DATE, calendar.day)
             putInt(DAY_IN_MONTH, calendar.dayInMonth)
             putInt(FIRST_DAY_IN_MONTH, calendar.firstDayOfWeek)
         }
