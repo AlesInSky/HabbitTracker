@@ -23,6 +23,7 @@ runtimeLivedata = "1.6.5"
 roomCommonJvm = "2.8.4"
 runtime = "1.10.0"
 navigationCompose = "2.9.7"
+foundation = "1.11.3"
 
 
 [libraries]
@@ -53,6 +54,7 @@ androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navig
 androidx-room-common-jvm = { group = "androidx.room", name = "room-common-jvm", version.ref = "roomCommonJvm" }
 androidx-compose-runtime = { group = "androidx.compose.runtime", name = "runtime", version.ref = "runtime" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

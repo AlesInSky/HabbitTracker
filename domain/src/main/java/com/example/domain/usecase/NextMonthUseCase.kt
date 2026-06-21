@@ -8,7 +8,7 @@ class NextMonthUseCase(private val calendarRepository: CalendarRepository) {
 
     fun execute(): CalendarDateDomain {
 
-        val todayDate = calendarRepository.getCurrentCalendar()
+        val todayDate = calendarRepository.getOrCalculateCalendarDate()
         val newDate = todayDate.copy()
 
         if (todayDate.month == 11) {

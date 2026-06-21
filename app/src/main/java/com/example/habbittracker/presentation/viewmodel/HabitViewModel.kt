@@ -38,31 +38,47 @@ class HabitViewModel(val dao: HabitDao) : ViewModel() {
         _editHabit.value = null
     }
 
-    fun addHabit(newHabit: HabitEntity) {
+    fun addHabit(habit: HabitEntity) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                dao.insert(newHabit)
+                dao.insert(habit)
             }
             loadHabits()
         }
     }
 
-    fun updateHabit(updateHabit: HabitEntity) {
+    fun updateHabit(habit: HabitEntity) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
-                dao.update(updateHabit)  // обновляем в базе
+                dao.update(habit)
             }
-            loadHabits()  // перезагружаем список
-            closeEditDialog()  // закрываем диалог
+            loadHabits()
+            closeEditDialog()
         }
     }
+
 
     fun deleteHabit(habit: HabitEntity) {
         viewModelScope.launch {
+            val updatedHabit = habit.copy(
+                isDeleted = true
+            )
             withContext(Dispatchers.IO) {
-                dao.delete(habit)
+                dao.update(updatedHabit)
             }
             loadHabits()
         }
     }
+
+    //С удалением пока повременим.
+    //При удалении, буду давать deleted = true
+    //А с полным удалением надо нормально подумать, как лучше сделать
+//    fun deleteHabit(habit: HabitEntity) {
+//        viewModelScope.launch {
+//            withContext(Dispatchers.IO) {
+//                dao.delete(habit)
+//            }
+//            loadHabits()
+//        }
+//    }
 }

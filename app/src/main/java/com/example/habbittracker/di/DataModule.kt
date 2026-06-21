@@ -14,7 +14,9 @@ val dataModule = module {
 
     single<CalendarRepository> {
         CalendarRepositoryImpl(
-            calendarStorage = get()
+            calendarStorage = get(),
+            calendarDao = get(),
+            habitDao = get()
         )
     }
 

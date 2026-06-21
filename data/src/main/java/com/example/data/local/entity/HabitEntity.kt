@@ -14,8 +14,8 @@ data class HabitEntity(
     var habitUnit: String = "",
     @ColumnInfo(name = "habit_price")
     var habitPrice: Int = 0,
-    @ColumnInfo(name = "habit_description")
-    var habitDescription: String = "",
     @ColumnInfo(name = "habit_image")
-    var habitImage: Int? = null
+    var habitImage: Int? = null,
+    @ColumnInfo(name = "is_deleted")
+    var isDeleted: Boolean = false
 )

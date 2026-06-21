@@ -1,94 +1,197 @@
 package com.example.habbittracker.presentation.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.data.local.dao.CalendarDao
 import com.example.data.local.dao.HabitDao
 import com.example.data.local.entity.CalendarEntity
 import com.example.data.local.entity.HabitEntity
+
 import com.example.domain.models.CalendarDateDomain
+import com.example.domain.models.HabitForDay
+import com.example.domain.repository.CalendarRepository
+import com.example.domain.usecase.GetHabitListForDayUseCase
+import com.example.domain.usecase.GetHabitListForMonthUseCase
 import com.example.domain.usecase.GetMonthUseCase
 import com.example.domain.usecase.NextMonthUseCase
 import com.example.domain.usecase.PreviousMonthUseCase
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 open class CalendarViewModel(
-    getMonthUseCase: GetMonthUseCase,
-    private val nextMonthUseCase: NextMonthUseCase,
-    private val previousMonthUseCase: PreviousMonthUseCase,
+    calendarRepository: CalendarRepository,
     val calendarDao: CalendarDao,
     val habitDao: HabitDao,
 ) : ViewModel() {
 
+    private var _calendarRepository = calendarRepository
+
+    //Переменная для корректного вывода инфы в статистику.
+    // Без него в getInfoByID остается подписка на предыдущие месяцы
+    private var habitInfoJob: Job? = null
+
     //Выбор актуального месяца и года
-    private var _currentMonth = MutableStateFlow(getMonthUseCase.getStartMonth())
-    val currentMonth: StateFlow<CalendarDateDomain> = _currentMonth
+    private var _currentMonthYear = MutableStateFlow(GetMonthUseCase(_calendarRepository).execute())
+    val currentMonthYear: StateFlow<CalendarDateDomain> = _currentMonthYear
 
     //Выбор актуального дня
-    private var _currentDate = MutableStateFlow(getMonthUseCase.getStartMonth())
-    val currentDate: StateFlow<CalendarDateDomain> = _currentDate
+    private var _currentDate = MutableStateFlow(GetMonthUseCase(_calendarRepository).execute())
 
     //Список уже созданных привычек
     private val _habitList = MutableStateFlow<List<HabitEntity>>(emptyList())
     val habitList: StateFlow<List<HabitEntity>> = _habitList
 
-    //Список дней, когда имеется привычка
-    private val _habitListForDate = MutableStateFlow<List<Int>>(emptyList())
-    val habitListForDate: StateFlow<List<Int>> = _habitListForDate
+    //Список дней в месяце, когда имеется привычка
+    private val _habitListForMonth = MutableStateFlow<List<Int>>(emptyList())
+    val habitListForMonth: StateFlow<List<Int>> = _habitListForMonth
 
     //Конкретные привычки на определенный день
-    private val _habitListFromDate = MutableStateFlow<List<Map<String, Any?>>>(emptyList())
-    val habitListFromDate: StateFlow<List<Map<String, Any?>>> = _habitListFromDate
+    private val _habitListForDay = MutableStateFlow<List<HabitForDay>>(emptyList())
+    val habitListForDay: StateFlow<List<HabitForDay>> = _habitListForDay
 
-    fun getHabitDay() {
+
+    private val _calendarList = MutableStateFlow<List<String>>(emptyList())
+    val calendarList = _calendarList.asStateFlow()
+
+    val dayListInfoDetail = MutableStateFlow<List<CalendarEntity>>(emptyList())
+
+
+    fun initialization(id: Int) {
         viewModelScope.launch {
-            val year = _currentMonth.value.year
-            val month = _currentMonth.value.month
-            val dayInMonth = _currentMonth.value.dayInMonth
-            var date = 1
-            val habitList = mutableListOf<Int>()
-
-            while (date <= dayInMonth) {
-                val currentDate = "${year}-${month}-${date}"
-                val getHabitForDate = calendarDao.getFromDate(calendarDate = currentDate)
-                if (getHabitForDate.isNotEmpty()) {
-                    habitList.add("$date".toInt())
-                }
-                date++
-            }
-            _habitListForDate.value = habitList
-            Log.d("ADD2", "$_habitListForDate")
-
+            val year = currentMonthYear.value.year
+            val month = currentMonthYear.value.month
+            val date = "$year-$month-%"
+            dayListInfoDetail.value =
+                calendarDao.getHabitsForMonthFromId(id = id, calendarDate = date)
         }
+
+    }
+
+    fun updateCalendar() {
+        val emptyCells: Int = when (currentMonthYear.value.firstDayOfWeek) {
+            1 -> 6
+            2 -> 0
+            3 -> 1
+            4 -> 2
+            5 -> 3
+            6 -> 4
+            7 -> 5
+            else -> 7
+        }
+        val newList = List(emptyCells) { "" } + (1..getDayInMonth()).map { it.toString() }
+        _calendarList.value = newList
+    }
+
+    fun refresh() {
+        updateCalendar()
+        getInfoById()
+    }
+
+    fun getHabitListForMonth() {
+        viewModelScope.launch {
+            _habitListForMonth.value =
+                GetHabitListForMonthUseCase(calendarRepository = _calendarRepository)
+                    .execute(_currentMonthYear.value)
+        }
+    }
+
+    fun editHabit(
+        id: Long,
+        habitId: Long,
+        price: Float,
+        quantity: Float,
+        description: String,
+        date: String,
+    ) {
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                val calendarHabit = CalendarEntity(
+                    calendarId = id,
+                    calendarHabitId = habitId,
+                    calendarHabitPrice = price,
+                    calendarHabitQuantity = quantity,
+                    calendarHabitDescription = description,
+                    calendarDate = date
+                )
+                calendarDao.update(calendarHabit)
+            }
+        }
+        getHabitListForMonth()
+        updateCalendar()
     }
 
     //Действия с изменением месяца в календаре
     fun getDayInMonth(): Int {
-        return _currentMonth.value.dayInMonth
+        return _currentMonthYear.value.dayInMonth
     }
 
     fun getYear(): Int {
-        return _currentMonth.value.year
+        return _currentMonthYear.value.year
     }
 
     fun getDate(date: Int): Int {
-        _currentDate.value = _currentDate.value.copy(date = date)
-        return _currentDate.value.date
+        _currentMonthYear.value = _currentMonthYear.value.copy(date = date)
+        return _currentMonthYear.value.date
     }
 
     fun nextMonth() {
-        val newMonth = nextMonthUseCase.execute()
-        _currentMonth.value = newMonth
+        viewModelScope.launch {
+            _currentMonthYear.value = NextMonthUseCase(_calendarRepository).execute()
+            getHabitListForMonth()
+            updateCalendar()
+        }
     }
 
     fun previousMoth() {
-        val newMonth = previousMonthUseCase.execute()
-        _currentMonth.value = newMonth
+        viewModelScope.launch {
+            _currentMonthYear.value = PreviousMonthUseCase(_calendarRepository).execute()
+            getHabitListForMonth()
+            updateCalendar()
+        }
+    }
+
+    //----------------------------------
+    //Выводим статистику пользователю
+    data class HabitUI(
+        val id: Int,
+        val name: String?,
+        val unit: String,
+        val sumPrice: Float,
+        val sumQuantity: Float,
+        val sumDay: Int,
+        val image: Int?
+    )
+
+    var habitListForMonthUI = MutableStateFlow<List<HabitUI>>(emptyList())
+
+    fun getInfoById() {
+        habitInfoJob?.cancel()
+
+        habitInfoJob = viewModelScope.launch {
+            val year = currentMonthYear.value.year
+            val month = currentMonthYear.value.month
+            val date = "$year-$month-%"
+
+            calendarDao.getFromDateForUIList(date).collect { habits ->
+                val newList = habits.map { habit ->
+                    HabitUI(
+                        id = habit.calendarHabitId.toInt(),
+                        name = calendarDao.getNameById(habit.calendarHabitId),
+                        unit = calendarDao.getUnitById(habit.calendarHabitId),
+                        sumPrice = calendarDao.getSumPrice(habit.calendarHabitId, date),
+                        sumQuantity = calendarDao.getSumQuantity(habit.calendarHabitId, date),
+                        sumDay = calendarDao.getSumDate(habit.calendarHabitId, date),
+                        image = calendarDao.getImageById(habit.calendarHabitId)
+                    )
+                }
+                habitListForMonthUI.value = newList.distinctBy { it.name }
+            }
+        }
     }
 
     //Действия с добавлением привычек в календарь
@@ -105,38 +208,8 @@ open class CalendarViewModel(
     //Загрузка привычек на день недели
     fun loadHabitList() {
         viewModelScope.launch {
-            val result = withContext(Dispatchers.IO) {
-                val year = _currentMonth.value.year
-                val month = _currentMonth.value.month
-                val date = _currentDate.value.date
-                val currentDate = "${year}-${month}-${date}"
-
-                val calendarEntries = calendarDao.getFromDate(currentDate)
-
-                val habitIds = calendarEntries.map { it.calendarHabitId }
-                val habits = if (habitIds.isNotEmpty()) {
-                    habitDao.getHabitsByIds(habitIds).associateBy { it.habitId }
-                } else {
-                    emptyMap()
-                }
-
-                calendarEntries.map { entry ->
-                    mapOf(
-                        "calendarId" to entry.calendarId,
-                        "calendar_date" to entry.calendarDate,
-                        "calendar_habit_id" to entry.calendarHabitId,
-                        "calendar_habit_price" to entry.calendarHabitPrice,
-                        "calendar_habit_quantity" to entry.calendarHabitQuantity,
-                        "calendar_habit_description" to entry.calendarHabitDescription,
-                        "habit_name" to habits[entry.calendarHabitId]?.habitName,
-                        "habit_unit" to habits[entry.calendarHabitId]?.habitUnit,
-                        "habit_price" to habits[entry.calendarHabitId]?.habitPrice,
-                        "habit_description" to habits[entry.calendarHabitId]?.habitDescription,
-                        "habit_image" to habits[entry.calendarHabitId]?.habitImage
-                    )
-                }
-            }
-            _habitListFromDate.value = result
+            _habitListForDay.value =
+                GetHabitListForDayUseCase(_calendarRepository).execute(_currentMonthYear.value)
         }
     }
 
@@ -145,7 +218,8 @@ open class CalendarViewModel(
             withContext(Dispatchers.IO) {
                 calendarDao.insert(habit)
             }
-            getHabitDay()
+            getHabitListForMonth()
+            loadHabitList()
         }
     }
 
@@ -154,13 +228,15 @@ open class CalendarViewModel(
             withContext(Dispatchers.IO) {
                 calendarDao.delete(habit)
             }
-            getHabitDay()
+            getHabitListForMonth()
             loadHabitList()
         }
     }
 
     init {
         loadHabits()
-        getHabitDay()
+        getHabitListForMonth()
+        getInfoById()
+        updateCalendar()
     }
 }
