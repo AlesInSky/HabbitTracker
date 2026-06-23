@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -31,7 +30,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
@@ -50,12 +48,22 @@ fun DialogCalendarDayEditHabit(
     vm: CalendarViewModel,
 ) {
 
-    val habitParams = habit
-
     //Локальные состояния для ввода
-    var priceText by remember { mutableStateOf("${habitParams.calendarHabitPrice}") }
-    var quantityText by remember { mutableStateOf("${habitParams.calendarHabitQuantity}") }
-    var descriptionText by remember { mutableStateOf(habitParams.calendarHabitDescription ?: "") }
+    var priceText by remember {
+        mutableStateOf(
+            if (habit.calendarHabitPrice.toInt().toFloat() == habit.calendarHabitPrice)
+                habit.calendarHabitPrice.toInt().toString()
+            else habit.calendarHabitPrice.toString()
+        )
+    }
+    var quantityText by remember {
+        mutableStateOf(
+            if (habit.calendarHabitQuantity.toInt().toFloat() == habit.calendarHabitQuantity)
+                habit.calendarHabitQuantity.toInt().toString()
+            else habit.calendarHabitQuantity.toString()
+        )
+    }
+    var descriptionText by remember { mutableStateOf(habit.calendarHabitDescription ?: "") }
 
     var priceError by remember { mutableStateOf(false) }
     var quantityError by remember { mutableStateOf(false) }
@@ -65,15 +73,14 @@ fun DialogCalendarDayEditHabit(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(560.dp)
                 .padding(12.dp),
             shape = RoundedCornerShape(24.dp)
         ) {
 
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(20.dp)
+                    .fillMaxWidth()
+                    .padding(8.dp)
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
@@ -92,7 +99,7 @@ fun DialogCalendarDayEditHabit(
                     Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
-                        text = habitParams.calendarDate,
+                        text = habit.calendarDate,
                         color = Color.Gray
                     )
                 }
@@ -112,7 +119,7 @@ fun DialogCalendarDayEditHabit(
 
                         Icon(
                             painter = painterResource(
-                                habitParams.habitImage
+                                habit.habitImage
                                     ?: R.drawable.card_add_icon
                             ),
                             contentDescription = null,
@@ -123,7 +130,7 @@ fun DialogCalendarDayEditHabit(
                         Spacer(modifier = Modifier.width(12.dp))
 
                         Text(
-                            text = habitParams.habitName ?: "Привычка",
+                            text = habit.habitName ?: "Привычка",
                             style = MaterialTheme.typography.titleMedium
                         )
                     }
@@ -154,7 +161,7 @@ fun DialogCalendarDayEditHabit(
                     shape = RoundedCornerShape(24.dp),
                     suffix = {
                         Text(
-                            text = habitParams.habitUnit ?: "шт.",
+                            text = habit.habitUnit ?: "шт.",
                             color = Color.Gray
                         )
                     }
@@ -203,8 +210,12 @@ fun DialogCalendarDayEditHabit(
                         descriptionText = it
                     },
                     modifier = Modifier.fillMaxWidth(),
-                    minLines = 3,
-                    shape = RoundedCornerShape(24.dp)
+                    minLines = 2,
+                    maxLines = 2,
+                    shape = RoundedCornerShape(24.dp),
+                    placeholder = {
+                        Text("Добавьте комментарий")
+                    }
                 )
 
                 Spacer(modifier = Modifier.weight(1f))
@@ -227,7 +238,7 @@ fun DialogCalendarDayEditHabit(
                         )
                     )
                     {
-                        Text("Отмена")
+                        Text("Отмена", maxLines = 1)
                     }
 
                     Spacer(modifier = Modifier.width(8.dp))
@@ -251,12 +262,12 @@ fun DialogCalendarDayEditHabit(
                             if (!hasError) {
 
                                 vm.editHabit(
-                                    id = habitParams.calendarId,
-                                    habitId = habitParams.calendarHabitId,
+                                    id = habit.calendarId,
+                                    habitId = habit.calendarHabitId,
                                     price = priceText.toFloat(),
                                     quantity = quantityText.toFloat(),
                                     description = descriptionText,
-                                    date = habitParams.calendarDate
+                                    date = habit.calendarDate
                                 )
 
                                 onDismissRequest()
@@ -266,7 +277,7 @@ fun DialogCalendarDayEditHabit(
                             containerColor = ButtonConfirmColor
                         )
                     ) {
-                        Text("Сохранить")
+                        Text("Сохранить", maxLines = 1)
                     }
                 }
             }
