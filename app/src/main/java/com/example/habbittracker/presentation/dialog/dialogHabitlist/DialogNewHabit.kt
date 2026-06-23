@@ -79,7 +79,7 @@ fun DialogNewHabit(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(20.dp)
+                    .padding(8.dp)
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
@@ -232,7 +232,7 @@ fun DialogNewHabit(
                         modifier = Modifier.weight(1f),
                         onClick = onDismissRequest
                     ) {
-                        Text("Отмена")
+                        Text("Отмена", maxLines = 1)
                     }
 
                     Button(
@@ -263,7 +263,7 @@ fun DialogNewHabit(
                             onSave(newHabit)
                         }
                     ) {
-                        Text("Сохранить")
+                        Text("Сохранить", maxLines = 1)
                     }
                 }
             }

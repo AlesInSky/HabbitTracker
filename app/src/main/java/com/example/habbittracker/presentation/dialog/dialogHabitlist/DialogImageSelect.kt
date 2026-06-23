@@ -35,6 +35,7 @@ import com.example.habbittracker.R
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.habbittracker.ui.theme.ButtonCancelColor
+import com.example.habbittracker.ui.theme.ButtonConfirmColor
 import com.example.habbittracker.ui.theme.CardDayColorGray
 import com.example.habbittracker.ui.theme.HabitDayColor
 import com.example.habbittracker.ui.theme.TextCardNumberColor
@@ -79,7 +80,7 @@ fun DialogImageSelect(
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp)
+                    .padding(8.dp)
             ) {
 
                 Text(
@@ -179,13 +180,16 @@ fun DialogImageSelect(
 
                     Button(
                         modifier = Modifier.weight(1f),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = ButtonConfirmColor
+                        ),
                         onClick = {
                             onSave(selectedIcon)
                             onDismiss()
                         },
                     )
                     {
-                        Text("Сохранить")
+                        Text("Сохранить", maxLines = 1)
                     }
                 }
             }
