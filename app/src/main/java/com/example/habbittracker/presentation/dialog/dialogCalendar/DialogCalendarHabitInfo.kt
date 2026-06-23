@@ -1,5 +1,7 @@
 package com.example.habbittracker.presentation.dialog.dialogCalendar
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,7 +37,6 @@ import com.example.habbittracker.ui.theme.CardDayColorGray
 import com.example.habbittracker.ui.theme.TextCardNumberColor
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-
 
 fun formatDate(dateString: String): String {
     val date = LocalDate.parse(
@@ -90,7 +91,7 @@ fun DialogCalendarHabitInfo(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(500.dp)
+                //.height(500.dp)
                 .padding(16.dp),
             shape = RoundedCornerShape(24.dp),
             elevation = CardDefaults.cardElevation(
@@ -141,8 +142,9 @@ fun DialogCalendarHabitInfo(
                     Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 12.dp, vertical = 4.dp),
+                            .padding(start = 12.dp, end = 12.dp, bottom = 16.dp),
                         shape = RoundedCornerShape(18.dp),
+                        border = BorderStroke(1.dp, Color.LightGray),
                         colors = CardDefaults.cardColors(
                             containerColor = CardDayColorGray
                         )
@@ -168,7 +170,11 @@ fun DialogCalendarHabitInfo(
                                 )
 
                                 Text(
-                                    text = habit.calendarHabitPrice.toString(),
+                                    text = if (habit.calendarHabitPrice.toInt()
+                                            .toFloat() == habit.calendarHabitPrice
+                                    )
+                                        habit.calendarHabitPrice.toInt().toString()
+                                    else habit.calendarHabitPrice.toString(),
                                     color = Color.DarkGray,
                                     style = MaterialTheme.typography.bodyLarge
                                 )
@@ -184,7 +190,11 @@ fun DialogCalendarHabitInfo(
                                 )
 
                                 Text(
-                                    text = habit.calendarHabitQuantity.toString(),
+                                    text = if (habit.calendarHabitQuantity.toInt()
+                                            .toFloat() == habit.calendarHabitQuantity
+                                    )
+                                        habit.calendarHabitQuantity.toInt().toString()
+                                    else habit.calendarHabitQuantity.toString(),
                                     color = Color.DarkGray,
                                     style = MaterialTheme.typography.bodyLarge
                                 )
