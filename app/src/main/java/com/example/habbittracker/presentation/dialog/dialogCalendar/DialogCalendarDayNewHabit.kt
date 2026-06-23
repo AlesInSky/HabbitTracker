@@ -116,7 +116,6 @@ fun DialogCalendarDayNewHabit(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(625.dp)
                 .padding(12.dp),
             shape = RoundedCornerShape(24.dp),
             elevation = CardDefaults.cardElevation(
@@ -125,8 +124,8 @@ fun DialogCalendarDayNewHabit(
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp)
+                    .fillMaxWidth()
+                    .padding(8.dp)
                     .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
@@ -361,7 +360,7 @@ fun DialogCalendarDayNewHabit(
                         )
                     )
                     {
-                        Text("Отмена")
+                        Text("Отмена", maxLines = 1)
                     }
 
                     Spacer(modifier = Modifier.width(8.dp))
@@ -400,7 +399,7 @@ fun DialogCalendarDayNewHabit(
                             containerColor = ButtonConfirmColor
                         )
                     ) {
-                        Text("Сохранить")
+                        Text("Сохранить", maxLines = 1)
                     }
                 }
             }
