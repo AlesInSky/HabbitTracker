@@ -53,13 +53,13 @@ fun DialogCalendarDayHabitList(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(400.dp)
+                //.height(400.dp)
                 .padding(16.dp),
             shape = RoundedCornerShape(16.dp),
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .fillMaxWidth()
                     .padding(16.dp)
             ) {
                 Text(
