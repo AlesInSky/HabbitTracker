@@ -43,159 +43,193 @@ import org.koin.androidx.compose.koinViewModel
 fun HabitListScreen(
     navController: NavController,
 ) {
+    val vm: HabitViewModel = koinViewModel()
+    val habitList by vm.habitList.collectAsState()
+    val editHabit by vm.editHabit.collectAsState()
 
-    @Composable
-    fun HabitCard(habit: HabitEntity) {
-        val vm: HabitViewModel = koinViewModel()
-        val editHabit by vm.editHabit.collectAsState()
+    HabitList(
+        habitList = habitList,
+        editHabit = editHabit,
+        vm = vm
+    )
+}
 
-        Card(
-            onClick = { vm.openEditDialog(habit) },
+@Composable
+fun HabitList(
+    habitList: List<HabitEntity>,
+    editHabit: HabitEntity?,
+    vm: HabitViewModel,
+) {
+
+    val visibleHabits = habitList.filter { !it.isDeleted }
+
+    if (visibleHabits.isEmpty()) {
+
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(80.dp)
-                .padding(horizontal = 12.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = CardDayColorGray
-            )
+                .fillMaxSize()
+                .padding(top = 32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Иконка
-                Icon(
-                    painter = painterResource(id = habit.habitImage ?: R.drawable.card_add_icon),
-                    tint = Color.Unspecified,
-                    modifier = Modifier.size(48.dp),
-                    contentDescription = "Habit icon"
-                )
 
+            Spacer(modifier = Modifier.height(16.dp))
 
-                Text(text = habit.habitName, modifier = Modifier.weight(1f))
+            Text(
+                text = "Привычек пока нет",
+                style = MaterialTheme.typography.titleMedium
+            )
 
-                // Кнопка редактирования. Пока не решил, как лучше открывать редактирование
-//                IconButton(onClick = { vm.openEditDialog(habit) }) {
-//                    Icon(
-//                        painter = painterResource(R.drawable.edit_icon),
-//                        contentDescription = "Edit"
-//                    )
-//                }
+            Text(
+                text = "Нажмите + чтобы создать первую привычку",
+                color = Color.Gray
+            )
 
-                // Кнопка удаления
-                IconButton(onClick = {
-                    vm.deleteHabit(habit)
-                }) {
-                    Icon(
-                        painter = painterResource(R.drawable.delete_icon),
-                        contentDescription = "Delete"
+            Spacer(modifier = Modifier.height(24.dp))
+
+            AddHabitCard(vm = vm)
+        }
+
+    } else {
+
+        LazyColumn(
+            contentPadding = PaddingValues(
+                top = 16.dp,
+                bottom = 16.dp
+            ),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+
+            // Заголовок
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 16.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+
+                    Text(
+                        text = "Список привычек",
+                        style = MaterialTheme.typography.titleLarge
                     )
+
+                    Text(
+                        text = "",
+                        color = Color.Gray
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
-        }
-        if (editHabit != null) {
-            DialogEditHabit(
-                habit = editHabit,
-                onDismissRequest = { vm.closeEditDialog() },
-                onSave = { vm.updateHabit(it) }
-            )
+
+            // Список привычек
+            items(visibleHabits) { habit ->
+                HabitCard(
+                    habit = habit,
+                    vm = vm
+                )
+            }
+
+            // Кнопка добавления
+            item {
+                AddHabitCard(vm = vm)
+            }
         }
     }
 
-    @Composable
-    fun AddHabitCard() {
-        val vm: HabitViewModel = koinViewModel()
-        var showConfirmDialog by remember { mutableStateOf(false) }
-
-        Card(
-            onClick = {
-                showConfirmDialog = true
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(80.dp)
-                .padding(horizontal = 12.dp),
-            colors = CardDefaults.cardColors(
-                containerColor = CardDayColorGray
-            )
+    if (editHabit != null) {
+        DialogEditHabit(
+            habit = editHabit,
+            onDismissRequest = { vm.closeEditDialog() },
+            onSave = { vm.updateHabit(it) }
         )
-        {
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
+    }
+}
+
+@Composable
+fun HabitCard(
+    habit: HabitEntity,
+    vm: HabitViewModel,
+) {
+    Card(
+        onClick = { vm.openEditDialog(habit) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .padding(horizontal = 12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = CardDayColorGray
+        )
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+            Icon(
+                painter = painterResource(
+                    id = habit.habitImage ?: R.drawable.card_add_icon
+                ),
+                contentDescription = null,
+                tint = Color.Unspecified,
+                modifier = Modifier.size(48.dp)
+            )
+
+            Text(
+                text = habit.habitName,
+                modifier = Modifier.weight(1f)
+            )
+
+            IconButton(onClick = {
+                vm.deleteHabit(habit)
+            }) {
                 Icon(
-                    painter = painterResource(R.drawable.card_add_icon),
-                    contentDescription = "Add"
+                    painter = painterResource(R.drawable.delete_icon),
+                    contentDescription = null
                 )
             }
         }
-        if (showConfirmDialog) {
-            DialogNewHabit(
-                habit = HabitEntity(),
-                onDismissRequest = { showConfirmDialog = false },
-                onSave = { newHabit ->
-                    vm.addHabit(newHabit)
-                    showConfirmDialog = false
-                },
-                vm = vm
+    }
+}
+
+@Composable
+fun AddHabitCard(
+    vm: HabitViewModel,
+) {
+    var showConfirmDialog by remember { mutableStateOf(false) }
+
+    Card(
+        onClick = { showConfirmDialog = true },
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(80.dp)
+            .padding(horizontal = 12.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = CardDayColorGray
+        )
+    ) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                painter = painterResource(R.drawable.card_add_icon),
+                contentDescription = null
             )
         }
     }
 
-    @Composable
-    fun HabitList() {
-        val vm: HabitViewModel = koinViewModel()
-        val habitList by vm.habitList.collectAsState()
-        val visibleHabits = habitList.filter { !it.isDeleted }
-
-        if (visibleHabits.isEmpty()) {
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = 32.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Text(
-                    text = "Привычек пока нет",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = "Нажмите + чтобы создать первую привычку",
-                    color = Color.Gray
-                )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                AddHabitCard()
-            }
-
-        } else {
-
-            LazyColumn(
-                contentPadding = PaddingValues(
-                    top = 16.dp,
-                    bottom = 16.dp
-                ),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-
-                items(visibleHabits) { habit ->
-                    HabitCard(habit)
-                }
-
-                item {
-                    AddHabitCard()
-                }
-            }
-        }
+    if (showConfirmDialog) {
+        DialogNewHabit(
+            habit = HabitEntity(),
+            onDismissRequest = { showConfirmDialog = false },
+            onSave = { newHabit ->
+                vm.addHabit(newHabit)
+                showConfirmDialog = false
+            },
+            vm = vm
+        )
     }
-
-    HabitList()
 }
