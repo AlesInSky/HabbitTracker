@@ -11,12 +11,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,6 +37,9 @@ import com.example.habbittracker.presentation.dialog.dialogHabitlist.DialogEditH
 import com.example.habbittracker.presentation.dialog.dialogHabitlist.DialogNewHabit
 import com.example.habbittracker.presentation.viewmodel.HabitViewModel
 import com.example.habbittracker.ui.theme.CardDayColorGray
+import com.example.habbittracker.ui.theme.DeleteSwipeColor
+import me.saket.swipe.SwipeAction
+import me.saket.swipe.SwipeableActionsBox
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -149,45 +152,66 @@ fun HabitList(
 @Composable
 fun HabitCard(
     habit: HabitEntity,
-    vm: HabitViewModel,
+    vm: HabitViewModel
 ) {
-    Card(
-        onClick = { vm.openEditDialog(habit) },
+
+    val archive = SwipeAction(
+        icon = {
+            Icon(
+                painter = painterResource(R.drawable.delete_icon),
+                contentDescription = null,
+                tint = Color.White
+            )
+        },
+        background = DeleteSwipeColor,
+        onSwipe = {
+            vm.deleteHabit(habit)
+        }
+    )
+
+
+    SwipeableActionsBox(
         modifier = Modifier
             .fillMaxWidth()
-            .height(80.dp)
             .padding(horizontal = 12.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = CardDayColorGray
-        )
+        endActions = listOf(archive),
+        swipeThreshold = 100.dp
     ) {
-        Row(
+
+        Card(
+            onClick = {
+                vm.openEditDialog(habit)
+            },
             modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxWidth()
+                .height(80.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = CardDayColorGray
+            )
         ) {
 
-            Icon(
-                painter = painterResource(
-                    id = habit.habitImage ?: R.drawable.card_add_icon
-                ),
-                contentDescription = null,
-                tint = Color.Unspecified,
-                modifier = Modifier.size(48.dp)
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
 
-            Text(
-                text = habit.habitName,
-                modifier = Modifier.weight(1f)
-            )
-
-            IconButton(onClick = {
-                vm.deleteHabit(habit)
-            }) {
                 Icon(
-                    painter = painterResource(R.drawable.delete_icon),
-                    contentDescription = null
+                    painter = painterResource(
+                        id = habit.habitImage ?: R.drawable.card_add_icon
+                    ),
+                    contentDescription = null,
+                    tint = Color.Unspecified,
+                    modifier = Modifier.size(48.dp)
+                )
+
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Text(
+                    text = habit.habitName,
+                    modifier = Modifier.weight(1f),
+                    maxLines = 1
                 )
             }
         }
