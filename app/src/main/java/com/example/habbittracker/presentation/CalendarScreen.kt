@@ -1,5 +1,6 @@
 package com.example.habbittracker.presentation
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -294,7 +296,11 @@ fun HabitCard(
             showHabitListDialog = true
         },
         modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(24.dp)
+        shape = RoundedCornerShape(24.dp),
+        border = BorderStroke(1.dp, Color.LightGray),
+        colors = CardDefaults.cardColors(
+            containerColor = CardDayColorGray
+        )
     ) {
         Row(
             modifier = Modifier
@@ -304,6 +310,9 @@ fun HabitCard(
         ) {
 
             Card(
+                colors = CardDefaults.cardColors(
+                    containerColor = Color.Transparent
+                ),
                 shape = RoundedCornerShape(16.dp)
             ) {
                 Icon(
@@ -311,10 +320,11 @@ fun HabitCard(
                         id = habit.image ?: R.drawable.card_add_icon
                     ),
                     contentDescription = null,
+                    tint = Color.Unspecified,
                     modifier = Modifier
-                        .size(56.dp)
+                        .size(72.dp)
                         .padding(12.dp),
-                    tint = Color.Unspecified
+
                 )
             }
 
