@@ -158,7 +158,7 @@ fun HabitCard(
     val archive = SwipeAction(
         icon = {
             Icon(
-                painter = painterResource(R.drawable.ic_delete2_black),
+                painter = painterResource(R.drawable.ic_delete_black),
                 contentDescription = null,
                 tint = Color.White
             )

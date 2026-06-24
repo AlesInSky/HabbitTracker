@@ -26,7 +26,7 @@ import com.example.habbittracker.presentation.HabitListScreen
 enum class Destination(
     val title: String, val iconId: Int, val route: String,
 ) {
-    CALENDAR("Calendar", R.drawable.ic_calendar2_black, "calendarRoute"),
+    CALENDAR("Calendar", R.drawable.ic_calendar_black, "calendarRoute"),
     HABIT_LIST("Habit list", R.drawable.ic_menu4_black, "habitRoute"),
     //STATISTICS("Statistics", R.drawable.card_add_icon,"statisticsRoute")
 }
