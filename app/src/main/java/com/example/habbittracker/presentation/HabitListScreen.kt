@@ -175,7 +175,8 @@ fun HabitCard(
             .fillMaxWidth()
             .padding(horizontal = 12.dp),
         endActions = listOf(archive),
-        swipeThreshold = 100.dp
+        swipeThreshold = 100.dp,
+        backgroundUntilSwipeThreshold = CardDayColorGray
     ) {
 
         Card(
@@ -188,6 +189,7 @@ fun HabitCard(
             colors = CardDefaults.cardColors(
                 containerColor = CardDayColorGray
             )
+
         ) {
 
             Row(
