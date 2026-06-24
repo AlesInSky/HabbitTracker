@@ -90,7 +90,6 @@ fun DialogCalendarHabitInfo(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                //.height(500.dp)
                 .padding(16.dp),
             shape = RoundedCornerShape(24.dp),
             elevation = CardDefaults.cardElevation(
