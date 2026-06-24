@@ -189,7 +189,7 @@ fun HabitCard(
                     }
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.delete_icon),
+                    painter = painterResource(id = R.drawable.ic_delete2_black),
                     contentDescription = "Delete",
                     tint = Color.Unspecified
                 )
