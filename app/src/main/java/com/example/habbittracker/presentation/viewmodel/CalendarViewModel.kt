@@ -6,10 +6,11 @@ import com.example.data.local.dao.CalendarDao
 import com.example.data.local.dao.HabitDao
 import com.example.data.local.entity.CalendarEntity
 import com.example.data.local.entity.HabitEntity
-
+import com.example.domain.models.ActualSystemDateDomain
 import com.example.domain.models.CalendarDateDomain
 import com.example.domain.models.HabitForDay
 import com.example.domain.repository.CalendarRepository
+import com.example.domain.usecase.GetActualSystemDate
 import com.example.domain.usecase.GetHabitListForDayUseCase
 import com.example.domain.usecase.GetHabitListForMonthUseCase
 import com.example.domain.usecase.GetMonthUseCase
@@ -39,8 +40,8 @@ open class CalendarViewModel(
     private var _currentMonthYear = MutableStateFlow(GetMonthUseCase(_calendarRepository).execute())
     val currentMonthYear: StateFlow<CalendarDateDomain> = _currentMonthYear
 
-    //Выбор актуального дня
-    private var _currentDate = MutableStateFlow(GetMonthUseCase(_calendarRepository).execute())
+    private var _systemDate = MutableStateFlow(GetActualSystemDate(_calendarRepository).execute())
+    val systemDate: StateFlow<ActualSystemDateDomain> = _systemDate
 
     //Список уже созданных привычек
     private val _habitList = MutableStateFlow<List<HabitEntity>>(emptyList())
@@ -59,7 +60,6 @@ open class CalendarViewModel(
     val calendarList = _calendarList.asStateFlow()
 
     val dayListInfoDetail = MutableStateFlow<List<CalendarEntity>>(emptyList())
-
 
     fun initialization(id: Int) {
         viewModelScope.launch {
@@ -155,7 +155,6 @@ open class CalendarViewModel(
         }
     }
 
-    //----------------------------------
     //Выводим статистику пользователю
     data class HabitUI(
         val id: Int,

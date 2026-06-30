@@ -4,9 +4,11 @@ import com.example.data.local.dao.CalendarDao
 import com.example.data.local.dao.HabitDao
 import com.example.data.storage.CalendarStorage
 import com.example.data.storage.models.CalendarDateData
+import com.example.domain.models.ActualSystemDateDomain
 import com.example.domain.models.CalendarDateDomain
 import com.example.domain.models.HabitForDay
 import com.example.domain.repository.CalendarRepository
+import java.time.LocalDate
 import java.util.Calendar
 
 //Логика здесь, потому что репозиторий знает источник данных: класс Calendar.
@@ -15,6 +17,14 @@ class CalendarRepositoryImpl(
     val calendarDao: CalendarDao,
     val habitDao: HabitDao,
 ) : CalendarRepository {
+
+    override fun actualSystemDate(): ActualSystemDateDomain {
+        return ActualSystemDateDomain(
+            LocalDate.now().dayOfMonth,
+            LocalDate.now().monthValue,
+            LocalDate.now().year
+        )
+    }
 
     override fun getOrCalculateCalendarDate(): CalendarDateDomain {
         val calendar: Calendar = Calendar.getInstance()
@@ -95,7 +105,7 @@ class CalendarRepositoryImpl(
                 habitImage = habits[it.calendarHabitId]?.habitImage
             )
         }
-        }
     }
+}
 
 

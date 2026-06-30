@@ -59,8 +59,8 @@ fun CalendarScreen(
     val vm: CalendarViewModel = koinViewModel()
     val monthName = stringArrayResource(R.array.months)
     val monthAndYear by vm.currentMonthYear.collectAsState()
+    val systemDate by vm.systemDate.collectAsState()
     val habitInData by vm.habitListForMonth.collectAsState()
-    val year = vm.getYear()
     val statisticMonthUI by vm.habitListForMonthUI.collectAsState()
     val calendarList by vm.calendarList.collectAsState()
 
@@ -72,13 +72,11 @@ fun CalendarScreen(
             .fillMaxSize()
             .padding(16.dp)
     ) {
-
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
         ) {
-
             //Верхняя панель с кнопками и месяцем
             Row(
                 modifier = Modifier
@@ -101,14 +99,12 @@ fun CalendarScreen(
                         fontWeight = FontWeight.Bold
                     )
                 }
-
                 Text(
-                    text = monthName[monthAndYear.month] + " $year",
+                    text = monthName[monthAndYear.month] + " ${vm.getYear()}",
                     fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.align(Alignment.CenterVertically)
                 )
-
                 Button(
                     onClick = {
                         vm.nextMonth()
@@ -156,7 +152,6 @@ fun CalendarScreen(
                     .fillMaxWidth(),
                 contentPadding = PaddingValues(4.dp)
             ) {
-
                 items(calendarList) { day ->
                     if (day.isNotEmpty()) {
                         val dayInt = day.toInt()
@@ -176,26 +171,35 @@ fun CalendarScreen(
                                         color = HabitDayColor,
                                         shape = RoundedCornerShape(24.dp)
                                     )
-
                             } else Modifier
                                 .padding(4.dp)
                                 .size(48.dp),
                             contentPadding = PaddingValues(0.dp),
                             colors = ButtonDefaults.buttonColors(containerColor = CardDayColorGray),
-
-                            ) {
+                        ) {
                             if (day.isNotEmpty()) {
-                                Text(
-                                    text = day,
-                                    color = TextCardNumberColor,
-                                    fontSize = 14.sp
-                                )
+                                if (day == systemDate.day.toString() &&
+                                    monthAndYear.month == systemDate.month - 1 &&
+                                    monthAndYear.year == systemDate.year
+                                ) {
+                                    Text(
+                                        text = day,
+                                        color = TextCardNumberColor,
+                                        fontSize = 14.sp,
+                                        fontWeight = FontWeight.ExtraBold
+                                    )
+                                } else {
+                                    Text(
+                                        text = day,
+                                        color = TextCardNumberColor,
+                                        fontSize = 14.sp
+                                    )
+                                }
                             } else {
                                 Box(
                                     modifier = Modifier
                                         .padding(4.dp)
                                         .size(48.dp)
-
                                 )
                             }
                         }
@@ -212,7 +216,6 @@ fun CalendarScreen(
                 text = "Статистика",
                 style = MaterialTheme.typography.headlineSmall
             )
-
             Text(
                 text = monthName[monthAndYear.month],
                 style = MaterialTheme.typography.bodyLarge,
@@ -308,7 +311,6 @@ fun HabitCard(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
             Card(
                 colors = CardDefaults.cardColors(
                     containerColor = Color.Transparent
@@ -324,7 +326,6 @@ fun HabitCard(
                     modifier = Modifier
                         .size(72.dp)
                         .padding(12.dp),
-
                 )
             }
 
@@ -333,22 +334,17 @@ fun HabitCard(
             Column(
                 modifier = Modifier.weight(1f)
             ) {
-
                 Text(
                     text = habit.name ?: "Unknown",
                     style = MaterialTheme.typography.titleMedium
                 )
-
                 Spacer(modifier = Modifier.height(4.dp))
-
                 Text(
                     text = "${habit.sumDay} дней",
                     style = MaterialTheme.typography.bodyMedium,
                     color = Color.Gray
                 )
-
                 Spacer(modifier = Modifier.height(8.dp))
-
                 Text(
                     text = "Потрачено: ${habit.sumPrice.toInt()} ₽",
                     style = MaterialTheme.typography.bodyMedium
@@ -358,12 +354,10 @@ fun HabitCard(
             Column(
                 horizontalAlignment = Alignment.End
             ) {
-
                 Text(
                     text = habit.sumQuantity.toInt().toString(),
                     style = MaterialTheme.typography.headlineSmall
                 )
-
                 Text(
                     text = habit.unit,
                     style = MaterialTheme.typography.bodyMedium,
