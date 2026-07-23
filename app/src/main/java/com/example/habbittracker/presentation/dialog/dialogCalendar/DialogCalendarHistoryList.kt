@@ -59,7 +59,6 @@ fun formatDate(dateString: String): String {
     return "${date.dayOfMonth} ${months[date.monthValue]}"
 }
 
-//Подробное окно статистики
 @Composable
 fun DialogCalendarHabitInfo(
     id: Int,
@@ -195,6 +194,16 @@ fun DialogCalendarHabitInfo(
                                     else habit.calendarHabitQuantity.toString(),
                                     color = Color.DarkGray,
                                     style = MaterialTheme.typography.bodyLarge
+                                )
+                            }
+                            Row {
+                                Text(
+                                    text = if (habit.calendarHabitDescription != "")
+                                        "Комментарий: ${habit.calendarHabitDescription}" else "",
+                                    color = TextCardNumberColor,
+                                    style = MaterialTheme.typography.bodyLarge,
+                                    minLines = 1,
+                                    maxLines = 2
                                 )
                             }
                         }
