@@ -47,6 +47,7 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.material3.ButtonDefaults
 import com.example.habbittracker.R
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import com.example.habbittracker.ui.theme.ButtonCancelColor
 import com.example.habbittracker.ui.theme.ButtonConfirmColor
 import com.example.habbittracker.ui.theme.DropdownCardColor
@@ -289,7 +290,10 @@ fun DialogCalendarDayNewHabit(
                                 )
                             )
                         }
-                    }
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Decimal
+                    )
                 )
 
                 // Поле для цены
@@ -338,7 +342,10 @@ fun DialogCalendarDayNewHabit(
                     shape = RoundedCornerShape(24.dp),
                     placeholder = {
                         Text("Добавьте комментарий")
-                    }
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences
+                    )
                 )
 
                 // Кнопки действий
