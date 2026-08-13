@@ -355,7 +355,11 @@ fun HabitCard(
                 horizontalAlignment = Alignment.End
             ) {
                 Text(
-                    text = habit.sumQuantity.toInt().toString(),
+                    text = if (habit.sumQuantity.toInt().toFloat() == habit.sumQuantity) {
+                        habit.sumQuantity.toInt().toString()
+                    } else {
+                        habit.sumQuantity.toString()
+                    },
                     style = MaterialTheme.typography.headlineSmall
                 )
                 Text(
