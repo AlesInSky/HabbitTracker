@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Habbit Tracker</string>
+    <string name="app_name">Rebalance</string>
 
     <string-array name="months">
         <item>Январь</item>
