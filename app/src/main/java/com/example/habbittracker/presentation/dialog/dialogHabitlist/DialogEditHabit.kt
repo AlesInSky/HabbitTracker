@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -20,6 +21,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.data.local.entity.HabitEntity
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import com.example.habbittracker.ui.theme.HabitDayColor
 
 //Диалоговое окно при редактировании привычки
@@ -104,7 +107,7 @@ fun DialogEditHabit(
                     )
                 }
 
-                //Название
+                //Название привычки
                 Text(
                     text = "Название",
                     style = MaterialTheme.typography.titleMedium
@@ -117,7 +120,13 @@ fun DialogEditHabit(
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(24.dp),
-                    singleLine = true
+                    singleLine = true,
+                    placeholder = {
+                        Text("Например: Сигареты", color = Color.Gray)
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.Sentences
+                    )
                 )
 
                 Text(
@@ -183,7 +192,10 @@ fun DialogEditHabit(
                     },
                     modifier = Modifier.fillMaxWidth(),
                     shape = RoundedCornerShape(24.dp),
-                    singleLine = true
+                    singleLine = true,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Decimal
+                    )
                 )
 
                 //Кнопки действия
