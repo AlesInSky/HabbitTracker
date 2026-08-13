@@ -27,7 +27,7 @@ import com.example.habbittracker.presentation.StatisticScreen
 enum class Destination(
     val title: String, val iconId: Int, val route: String,
 ) {
-    STATISTICS("Statistics", R.drawable.card_add_icon,"statisticsRoute"),
+    //STATISTICS("Statistics", R.drawable.card_add_icon,"statisticsRoute"),
     CALENDAR("Calendar", R.drawable.ic_calendar_black, "calendarRoute"),
     HABIT_LIST("Habit list", R.drawable.ic_menu4_black, "habitRoute")
 }
@@ -47,7 +47,7 @@ fun BottomNavHost(
                 when (destination) {
                     Destination.CALENDAR -> CalendarScreen(navController)
                     Destination.HABIT_LIST -> HabitListScreen(navController)
-                    Destination.STATISTICS -> StatisticScreen(navController)
+                    //Destination.STATISTICS -> StatisticScreen(navController)
                 }
             }
         }
