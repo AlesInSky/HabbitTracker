@@ -28,8 +28,8 @@ enum class Destination(
     val title: String, val iconId: Int, val route: String,
 ) {
     //STATISTICS("Statistics", R.drawable.card_add_icon,"statisticsRoute"),
-    CALENDAR("Calendar", R.drawable.ic_calendar_black, "calendarRoute"),
-    HABIT_LIST("Habit list", R.drawable.ic_menu4_black, "habitRoute")
+    CALENDAR("Календарь", R.drawable.ic_calendar_black, "calendarRoute"),
+    HABIT_LIST("Список привычек", R.drawable.ic_menu4_black, "habitRoute")
 }
 
 @Composable
