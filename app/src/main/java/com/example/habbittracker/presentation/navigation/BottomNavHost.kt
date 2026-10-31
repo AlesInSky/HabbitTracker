@@ -5,6 +5,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -12,8 +13,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import com.example.habbittracker.R
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
@@ -23,13 +24,14 @@ import androidx.navigation.compose.rememberNavController
 import com.example.habbittracker.presentation.CalendarScreen
 import com.example.habbittracker.presentation.HabitListScreen
 import com.example.habbittracker.presentation.StatisticScreen
+import com.composables.icons.lucide.R as LucideR
 
 enum class Destination(
     val title: String, val iconId: Int, val route: String,
 ) {
     //STATISTICS("Statistics", R.drawable.card_add_icon,"statisticsRoute"),
-    CALENDAR("Календарь", R.drawable.ic_calendar_black, "calendarRoute"),
-    HABIT_LIST("Список привычек", R.drawable.ic_menu4_black, "habitRoute")
+    CALENDAR("Календарь", LucideR.drawable.lucide_ic_calendar_days, "calendarRoute"),
+    HABIT_LIST("Список привычек", LucideR.drawable.lucide_ic_list_checks, "habitRoute")
 }
 
 @Composable
@@ -64,7 +66,9 @@ fun NavigationBarExample(modifier: Modifier = Modifier) {
     Scaffold(
         modifier = modifier,
         bottomBar = {
-            NavigationBar(windowInsets = NavigationBarDefaults.windowInsets) {
+            NavigationBar(windowInsets = NavigationBarDefaults.windowInsets,
+                    containerColor = Color(0xFFF4F8FD),
+                contentColor = Color(0xFF3986D7)) {
                 Destination.entries.forEachIndexed { index, destination ->
                     NavigationBarItem(
                         selected = selectedDestination == index,
@@ -78,7 +82,14 @@ fun NavigationBarExample(modifier: Modifier = Modifier) {
                                 contentDescription = destination.title
                             )
                         },
-                        label = { Text(destination.title) }
+                        label = { Text(destination.title)},
+                        colors = NavigationBarItemDefaults.colors(
+                            selectedIconColor = Color(0xFF3986D7),
+                            selectedTextColor = Color(0xFF3986D7),
+                            unselectedIconColor = Color(0xFF8A9AAF),
+                            unselectedTextColor = Color(0xFF8A9AAF),
+                            indicatorColor = Color(0xFFDCEEFF)
+                        )
                     )
                 }
             }
