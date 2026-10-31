@@ -13,7 +13,7 @@ android {
         applicationId = "com.example.habbittracker"
         minSdk = 28
         targetSdk = 36
-        versionCode = 1
+        versionCode = 2
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -77,4 +77,5 @@ dependencies {
     implementation(libs.androidx.room.runtime) // ROOM
     ksp(libs.androidx.room.compiler) // Кодогенератор для ROOM
     implementation (libs.androidx.room.ktx) // Дополнительно для Kotlin Coroutines, Kotlin Flows
+    implementation(libs.icons.lucide.android) //Иконки для bottom
 }
