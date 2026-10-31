@@ -18,11 +18,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
-import com.example.habbittracker.R
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -33,227 +35,324 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.domain.models.HabitForDay
+import com.example.habbittracker.R
 import com.example.habbittracker.presentation.viewmodel.CalendarViewModel
-import com.example.habbittracker.ui.theme.ButtonCancelColor
-import com.example.habbittracker.ui.theme.ButtonConfirmColor
-import com.example.habbittracker.ui.theme.TextCardNumberColor
 
+private val EditHabitBlue = Color(0xFF5798D5)
+private val EditHabitBlueLight = Color(0xFFEAF4FC)
+private val EditHabitText = Color(0xFF263747)
+private val EditHabitSecondary = Color(0xFF94A3B1)
+private val EditHabitDivider = Color(0xFFEDF1F5)
+private val EditHabitBorder = Color(0xFFEAF0F5)
+private val EditHabitBackground = Color.White
 
-//Диалоговое окно при добавлении привычки в дату календаря
+// Диалог редактирования привычки за конкретный день
 @Composable
 fun DialogCalendarDayEditHabit(
     habit: HabitForDay,
     onDismissRequest: () -> Unit,
     vm: CalendarViewModel,
 ) {
-
-    //Локальные состояния для ввода
+    // Локальные состояния для ввода
     var priceText by remember {
         mutableStateOf(
-            if (habit.calendarHabitPrice.toInt().toFloat() == habit.calendarHabitPrice)
+            if (habit.calendarHabitPrice.toInt().toFloat() == habit.calendarHabitPrice) {
                 habit.calendarHabitPrice.toInt().toString()
-            else habit.calendarHabitPrice.toString()
+            } else {
+                habit.calendarHabitPrice.toString()
+            }
         )
     }
+
     var quantityText by remember {
         mutableStateOf(
-            if (habit.calendarHabitQuantity.toInt().toFloat() == habit.calendarHabitQuantity)
+            if (habit.calendarHabitQuantity.toInt().toFloat() == habit.calendarHabitQuantity) {
                 habit.calendarHabitQuantity.toInt().toString()
-            else habit.calendarHabitQuantity.toString()
+            } else {
+                habit.calendarHabitQuantity.toString()
+            }
         )
     }
-    var descriptionText by remember { mutableStateOf(habit.calendarHabitDescription ?: "") }
+
+    var descriptionText by remember {
+        mutableStateOf(habit.calendarHabitDescription ?: "")
+    }
 
     var priceError by remember { mutableStateOf(false) }
     var quantityError by remember { mutableStateOf(false) }
 
     Dialog(onDismissRequest = onDismissRequest) {
-
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(8.dp),
             shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = EditHabitBackground
+            ),
+            border = BorderStroke(1.dp, EditHabitBorder),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 2.dp
+            )
         ) {
-
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
+                    .padding(20.dp)
                     .verticalScroll(rememberScrollState())
                     .imePadding(),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
-
                 // Заголовок
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-
                     Text(
                         text = "Редактирование записи",
-                        style = MaterialTheme.typography.titleLarge
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.SemiBold,
+                        color = EditHabitText
                     )
 
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(5.dp))
 
                     Text(
                         text = habit.calendarDate,
-                        color = Color.Gray
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = EditHabitSecondary
                     )
                 }
+
+                HorizontalDivider(
+                    thickness = 1.dp,
+                    color = EditHabitDivider
+                )
 
                 // Карточка привычки
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(24.dp)
+                    shape = RoundedCornerShape(18.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = EditHabitBackground
+                    ),
+                    border = BorderStroke(1.dp, EditHabitBorder),
+                    elevation = CardDefaults.cardElevation(
+                        defaultElevation = 0.dp
+                    )
                 ) {
-
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
+                            .padding(14.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-
-                        Icon(
-                            painter = painterResource(
-                                habit.habitImage
-                                    ?: R.drawable.card_add_icon
-                            ),
-                            contentDescription = null,
-                            modifier = Modifier.size(40.dp),
-                            tint = Color.Unspecified
-                        )
+                        Card(
+                            shape = RoundedCornerShape(15.dp),
+                            colors = CardDefaults.cardColors(
+                                containerColor = EditHabitBlueLight
+                            )
+                        ) {
+                            Icon(
+                                painter = painterResource(
+                                    habit.habitImage ?: R.drawable.card_add_icon
+                                ),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .padding(7.dp)
+                                    .size(40.dp),
+                                tint = Color.Unspecified
+                            )
+                        }
 
                         Spacer(modifier = Modifier.width(12.dp))
 
-                        Text(
-                            text = habit.habitName ?: "Привычка",
-                            style = MaterialTheme.typography.titleMedium
-                        )
+                        Column {
+                            Text(
+                                text = habit.habitName ?: "Привычка",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold,
+                                color = EditHabitText
+                            )
+
+                            Text(
+                                text = "Запись за выбранный день",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = EditHabitSecondary
+                            )
+                        }
                     }
                 }
 
                 // Количество
-                Text(
-                    text = "Количество",
-                    style = MaterialTheme.typography.titleMedium
-                )
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(7.dp)
+                ) {
+                    Text(
+                        text = "Количество",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Medium,
+                        color = EditHabitText
+                    )
 
-                OutlinedTextField(
-                    value = quantityText,
-                    onValueChange = { newText ->
-                        if (
-                            newText.all { it.isDigit() || it == '.' } ||
-                            newText.isEmpty()
-                        ) {
-                            if (newText.count { it == '.' } <= 1) {
-                                quantityText = newText
-                                quantityError = false
+                    OutlinedTextField(
+                        value = quantityText,
+                        onValueChange = { newText ->
+                            if (
+                                newText.all { it.isDigit() || it == '.' } ||
+                                newText.isEmpty()
+                            ) {
+                                if (newText.count { it == '.' } <= 1) {
+                                    quantityText = newText
+                                    quantityError = false
+                                }
                             }
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    isError = quantityError,
-                    shape = RoundedCornerShape(24.dp),
-                    suffix = {
-                        Text(
-                            text = habit.habitUnit ?: "шт.",
-                            color = Color.Gray
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        isError = quantityError,
+                        shape = RoundedCornerShape(15.dp),
+                        suffix = {
+                            Text(
+                                text = habit.habitUnit ?: "шт.",
+                                color = EditHabitSecondary
+                            )
+                        },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = EditHabitBlue,
+                            unfocusedBorderColor = EditHabitBorder,
+                            focusedLabelColor = EditHabitBlue,
+                            cursorColor = EditHabitBlue,
+                            focusedTextColor = EditHabitText,
+                            unfocusedTextColor = EditHabitText,
+                            errorBorderColor = MaterialTheme.colorScheme.error
                         )
-                    }
-                )
+                    )
+                }
 
                 // Стоимость
-                Text(
-                    text = "Стоимость",
-                    style = MaterialTheme.typography.titleMedium
-                )
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(7.dp)
+                ) {
+                    Text(
+                        text = "Стоимость",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Medium,
+                        color = EditHabitText
+                    )
 
-                OutlinedTextField(
-                    value = priceText,
-                    onValueChange = { newText ->
-                        if (
-                            newText.all { it.isDigit() || it == '.' } ||
-                            newText.isEmpty()
-                        ) {
-                            if (newText.count { it == '.' } <= 1) {
-                                priceText = newText
-                                priceError = false
+                    OutlinedTextField(
+                        value = priceText,
+                        onValueChange = { newText ->
+                            if (
+                                newText.all { it.isDigit() || it == '.' } ||
+                                newText.isEmpty()
+                            ) {
+                                if (newText.count { it == '.' } <= 1) {
+                                    priceText = newText
+                                    priceError = false
+                                }
                             }
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    singleLine = true,
-                    isError = priceError,
-                    shape = RoundedCornerShape(24.dp),
-                    suffix = {
-                        Text(
-                            text = "₽",
-                            color = Color.Gray
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        singleLine = true,
+                        isError = priceError,
+                        shape = RoundedCornerShape(15.dp),
+                        suffix = {
+                            Text(
+                                text = "₽",
+                                color = EditHabitSecondary
+                            )
+                        },
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = EditHabitBlue,
+                            unfocusedBorderColor = EditHabitBorder,
+                            focusedLabelColor = EditHabitBlue,
+                            cursorColor = EditHabitBlue,
+                            focusedTextColor = EditHabitText,
+                            unfocusedTextColor = EditHabitText,
+                            errorBorderColor = MaterialTheme.colorScheme.error
                         )
-                    }
-                )
+                    )
+                }
 
                 // Комментарий
-                Text(
-                    text = "Комментарий",
-                    style = MaterialTheme.typography.titleMedium
-                )
-
-                OutlinedTextField(
-                    value = descriptionText,
-                    onValueChange = {
-                        descriptionText = it
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    minLines = 2,
-                    maxLines = 2,
-                    shape = RoundedCornerShape(24.dp),
-                    placeholder = {
-                        Text("Добавьте комментарий")
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.Sentences
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(7.dp)
+                ) {
+                    Text(
+                        text = "Комментарий",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontWeight = FontWeight.Medium,
+                        color = EditHabitText
                     )
-                )
 
-               // Spacer(modifier = Modifier.weight(1f))
+                    OutlinedTextField(
+                        value = descriptionText,
+                        onValueChange = {
+                            descriptionText = it
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        minLines = 2,
+                        maxLines = 2,
+                        shape = RoundedCornerShape(15.dp),
+                        placeholder = {
+                            Text(
+                                text = "Добавьте комментарий",
+                                color = EditHabitSecondary
+                            )
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            capitalization = KeyboardCapitalization.Sentences
+                        ),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = EditHabitBlue,
+                            unfocusedBorderColor = EditHabitBorder,
+                            focusedLabelColor = EditHabitBlue,
+                            cursorColor = EditHabitBlue,
+                            focusedTextColor = EditHabitText,
+                            unfocusedTextColor = EditHabitText
+                        )
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(2.dp))
 
                 // Кнопки
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.End
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-
                     OutlinedButton(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp),
                         onClick = onDismissRequest,
+                        shape = RoundedCornerShape(14.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = TextCardNumberColor
+                            contentColor = EditHabitSecondary
                         ),
                         border = BorderStroke(
-                            2.dp,
-                            ButtonCancelColor
+                            1.dp,
+                            EditHabitBorder
                         )
-                    )
-                    {
-                        Text("Отмена", maxLines = 1)
+                    ) {
+                        Text(
+                            text = "Отмена",
+                            maxLines = 1
+                        )
                     }
 
-                    Spacer(modifier = Modifier.width(8.dp))
-
                     Button(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp),
                         onClick = {
-
                             var hasError = false
 
                             if (quantityText.isBlank()) {
@@ -267,7 +366,6 @@ fun DialogCalendarDayEditHabit(
                             }
 
                             if (!hasError) {
-
                                 vm.editHabit(
                                     id = habit.calendarId,
                                     habitId = habit.calendarHabitId,
@@ -280,11 +378,17 @@ fun DialogCalendarDayEditHabit(
                                 onDismissRequest()
                             }
                         },
+                        shape = RoundedCornerShape(14.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = ButtonConfirmColor
+                            containerColor = EditHabitBlue,
+                            contentColor = Color.White
                         )
                     ) {
-                        Text("Сохранить", maxLines = 1)
+                        Text(
+                            text = "Сохранить",
+                            maxLines = 1,
+                            fontWeight = FontWeight.Medium
+                        )
                     }
                 }
             }

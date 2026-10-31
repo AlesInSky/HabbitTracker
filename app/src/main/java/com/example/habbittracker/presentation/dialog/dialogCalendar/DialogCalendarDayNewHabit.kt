@@ -2,12 +2,16 @@ package com.example.habbittracker.presentation.dialog.dialogCalendar
 
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -16,13 +20,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -32,30 +39,54 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.example.data.local.entity.CalendarEntity
 import com.example.data.local.entity.HabitEntity
 import com.example.domain.models.CalendarDateDomain
-import com.example.habbittracker.presentation.viewmodel.CalendarViewModel
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.heightIn
-import androidx.compose.material3.ButtonDefaults
 import com.example.habbittracker.R
-import androidx.compose.material3.OutlinedButton
-import androidx.compose.ui.text.input.KeyboardCapitalization
-import com.example.habbittracker.ui.theme.ButtonCancelColor
-import com.example.habbittracker.ui.theme.ButtonConfirmColor
-import com.example.habbittracker.ui.theme.DropdownCardColor
-import com.example.habbittracker.ui.theme.TextCardNumberColor
+import com.example.habbittracker.presentation.viewmodel.CalendarViewModel
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-//Диалоговое окно при добавлении привычки в дату календаря
+// Цвета
+
+private val HabitFormBlue = Color(0xFF5798D5)
+private val HabitFormBlueDark = Color(0xFF367DBD)
+private val HabitFormBlueLight = Color(0xFFEAF4FC)
+private val HabitFormText = Color(0xFF263747)
+private val HabitFormSecondary = Color(0xFF94A3B1)
+private val HabitFormDivider = Color(0xFFEDF1F5)
+private val HabitFormBorder = Color(0xFFEAF0F5)
+private val HabitFormBackground = Color.White
+
+// Формат даты
+
+fun formatDateNewHabit(dateString: String): String {
+    val date = LocalDate.parse(
+        dateString,
+        DateTimeFormatter.ofPattern("yyyy-M-d")
+    )
+
+    val months = listOf(
+        "янв", "фев", "мар", "апр",
+        "мая", "июн", "июл", "авг",
+        "сен", "окт", "ноя", "дек"
+    )
+
+    return "${date.dayOfMonth} ${months[date.monthValue - 1]}"
+}
+
+// Диалог добавления привычки в дату календаря
+
 @Composable
 fun DialogCalendarDayNewHabit(
     date: CalendarDateDomain,
@@ -64,204 +95,255 @@ fun DialogCalendarDayNewHabit(
     onSave: (CalendarEntity) -> Unit,
     vm: CalendarViewModel,
 ) {
-    // Если нет привычки для редактирования - не показываем диалог
     if (habit == null) return
 
-    // Для DropDown Menu
     var expanded by remember { mutableStateOf(false) }
     var selectedUnit by remember { mutableStateOf<HabitEntity?>(null) }
+
     val habitLoad by vm.habitList.collectAsState()
+    val availableHabits = habitLoad.filter { !it.isDeleted }
 
-    // Локальные состояния для редактирования
     var description by remember { mutableStateOf("") }
-
-    //Локальные состояния для ввода
-    val context = LocalContext.current
-
     var priceText by remember { mutableStateOf("") }
     var quantityText by remember { mutableStateOf("") }
 
     var priceError by remember { mutableStateOf(false) }
     var quantityError by remember { mutableStateOf(false) }
 
+    val context = LocalContext.current
+
     //Дата
+
     val dateYear = date.year
     val dateMonth = date.month
     val dateDay = vm.currentMonthYear.collectAsState().value.date
     val getDate = "${dateYear}-${dateMonth}-${dateDay}"
 
-    fun formatDate(dateString: String): String {
-        val date = LocalDate.parse(
-            dateString,
-            DateTimeFormatter.ofPattern("yyyy-M-d")
-        )
-        val months = listOf(
-            "янв",
-            "фев",
-            "мар",
-            "апр",
-            "мая",
-            "июн",
-            "июл",
-            "авг",
-            "сен",
-            "окт",
-            "ноя",
-            "дек"
-        )
-        return "${date.dayOfMonth} ${months[date.monthValue]}"
-    }
-
-    Dialog(onDismissRequest = onDismissRequest) {
+    Dialog(
+        onDismissRequest = onDismissRequest
+    ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(12.dp),
+                .padding(vertical = 12.dp),
             shape = RoundedCornerShape(24.dp),
+            border = BorderStroke(1.dp, HabitFormBorder),
+            colors = CardDefaults.cardColors(
+                containerColor = HabitFormBackground
+            ),
             elevation = CardDefaults.cardElevation(
-                defaultElevation = 8.dp
+                defaultElevation = 2.dp
             )
         ) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(8.dp)
-                    .verticalScroll(rememberScrollState()),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                    .verticalScroll(rememberScrollState())
+                    .padding(
+                        horizontal = 20.dp,
+                        vertical = 20.dp
+                    ),
+                verticalArrangement = Arrangement.spacedBy(14.dp)
             ) {
+
                 // Заголовок
+
                 Column(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
                         text = "Новая привычка",
-                        style = MaterialTheme.typography.titleLarge
+                        fontSize = 19.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = HabitFormText
                     )
 
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(5.dp))
 
                     Text(
-                        text = formatDate(getDate),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.DarkGray
+                        text = formatDateNewHabit(getDate),
+                        fontSize = 13.sp,
+                        color = HabitFormSecondary
                     )
                 }
 
+                Spacer(modifier = Modifier.height(2.dp))
+
+                HorizontalDivider(
+                    color = HabitFormDivider,
+                    thickness = 1.dp
+                )
+
                 //Выбор привычки
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            expanded = true
-                        },
-                    shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color.Unspecified
-                    )
-                ) {
-                    Row(
+
+                Text(
+                    text = "Привычка",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = HabitFormText
+                )
+
+                Box {
+                    Card(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                            .clickable {
+                                expanded = true
+                            },
+                        shape = RoundedCornerShape(17.dp),
+                        border = BorderStroke(1.dp, HabitFormBorder),
+                        colors = CardDefaults.cardColors(
+                            containerColor = Color.White
+                        ),
+                        elevation = CardDefaults.cardElevation(
+                            defaultElevation = 0.dp
+                        )
                     ) {
-
-                        Icon(
-                            painter = painterResource(
-                                id = selectedUnit?.habitImage ?: R.drawable.card_add_icon
-                            ),
-                            contentDescription = null,
-                            tint = Color.Unspecified,
-                            modifier = Modifier.size(32.dp)
-                        )
-
-                        Spacer(modifier = Modifier.width(12.dp))
-
-                        Text(
-                            text = selectedUnit?.habitName ?: "Выберите привычку",
-                            modifier = Modifier.weight(1f),
-                            style = MaterialTheme.typography.titleMedium
-                        )
-                        Icon(
-                            painter = painterResource(android.R.drawable.arrow_down_float),
-                            contentDescription = null
-                        )
-                        DropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false },
+                        Row(
                             modifier = Modifier
-                                .fillMaxWidth(0.6f)
-                                .heightIn(max = 275.dp)
+                                .fillMaxWidth()
+                                .padding(14.dp),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
-                            habitLoad.forEach { habit ->
-                                if (!habit.isDeleted) {
-                                    DropdownMenuItem(
-                                        text = {
-                                            Card(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                shape = RoundedCornerShape(16.dp),
-                                                colors = CardDefaults.cardColors(
-                                                    containerColor = DropdownCardColor
-                                                )
-                                            ) {
-                                                Row(
-                                                    modifier = Modifier
-                                                        .fillMaxWidth()
-                                                        .padding(start = 12.dp, bottom = 8.dp),
-                                                    verticalAlignment = Alignment.CenterVertically
-                                                ) {
+                            Box(
+                                modifier = Modifier
+                                    .size(46.dp)
+                                    .clip(RoundedCornerShape(13.dp))
+                                    .background(HabitFormBlueLight),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    painter = painterResource(
+                                        id = selectedUnit?.habitImage
+                                            ?: R.drawable.card_add_icon
+                                    ),
+                                    contentDescription = null,
+                                    tint = Color.Unspecified,
+                                    modifier = Modifier.size(34.dp)
+                                )
+                            }
 
-                                                    Icon(
-                                                        painter = painterResource(
-                                                            habit.habitImage
-                                                                ?: R.drawable.card_add_icon
-                                                        ),
-                                                        contentDescription = null,
-                                                        tint = Color.Unspecified,
-                                                        modifier = Modifier.size(28.dp)
-                                                    )
+                            Spacer(modifier = Modifier.width(12.dp))
 
-                                                    Spacer(modifier = Modifier.width(12.dp))
-
-                                                    Column {
-
-                                                        Text(
-                                                            text = habit.habitName,
-                                                            style = MaterialTheme.typography.bodyLarge
-                                                        )
-
-                                                        Text(
-                                                            text = habit.habitUnit,
-                                                            style = MaterialTheme.typography.bodySmall,
-                                                            color = Color.Gray
-                                                        )
-                                                    }
-                                                }
-                                            }
-                                        },
-                                        onClick = {
-                                            selectedUnit = habit
-                                            priceText = habit.habitPrice.toString()
-                                            expanded = false
-                                        }
-                                    )
+                            Text(
+                                text = selectedUnit?.habitName
+                                    ?: "Выберите привычку",
+                                modifier = Modifier.weight(1f),
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = if (selectedUnit == null) {
+                                    HabitFormSecondary
+                                } else {
+                                    HabitFormText
                                 }
+                            )
+
+                            Icon(
+                                painter = painterResource(
+                                    android.R.drawable.arrow_down_float
+                                ),
+                                contentDescription = null,
+                                tint = HabitFormSecondary,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                    }
+
+                    // Выпадающий список
+
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = {
+                            expanded = false
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth(0.75f)
+                            .heightIn(max = 275.dp),
+                        shape = RoundedCornerShape(18.dp),
+                        containerColor = Color.White,
+                        tonalElevation = 2.dp,
+                        shadowElevation = 4.dp
+                    ) {
+                        availableHabits.forEachIndexed { index, item ->
+
+                            DropdownMenuItem(
+                                text = {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 4.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            painter = painterResource(
+                                                item.habitImage
+                                                    ?: R.drawable.card_add_icon
+                                            ),
+                                            contentDescription = null,
+                                            tint = Color.Unspecified,
+                                            modifier = Modifier.size(30.dp)
+                                        )
+
+                                        Spacer(
+                                            modifier = Modifier.width(12.dp)
+                                        )
+
+                                        Column {
+                                            Text(
+                                                text = item.habitName,
+                                                fontSize = 14.sp,
+                                                fontWeight = FontWeight.Medium,
+                                                color = HabitFormText
+                                            )
+
+                                            Text(
+                                                text = item.habitUnit,
+                                                fontSize = 12.sp,
+                                                color = HabitFormSecondary
+                                            )
+                                        }
+                                    }
+                                },
+                                onClick = {
+                                    selectedUnit = item
+                                    priceText = item.habitPrice.toString()
+                                    expanded = false
+                                }
+                            )
+
+                            // Разделитель между привычками
+
+                            if (index < availableHabits.lastIndex) {
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(
+                                        horizontal = 14.dp
+                                    ),
+                                    thickness = 1.dp,
+                                    color = HabitFormDivider
+                                )
                             }
                         }
                     }
                 }
 
-                //Заголовок - Количество
+                //Количество
+
                 Text(
                     text = "Количество",
-                    style = MaterialTheme.typography.titleMedium
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = HabitFormText
                 )
-                //Ввод количества + отображение ед.изм.
+
                 OutlinedTextField(
                     value = quantityText,
                     onValueChange = { newText ->
-                        if (newText.all { it.isDigit() || it == '.' } || newText.isEmpty()) {
+                        if (
+                            newText.all {
+                                it.isDigit() || it == '.'
+                            } || newText.isEmpty()
+                        ) {
                             if (newText.count { it == '.' } <= 1) {
                                 quantityText = newText
                                 quantityError = false
@@ -273,122 +355,182 @@ fun DialogCalendarDayNewHabit(
                     modifier = Modifier.fillMaxWidth(),
                     singleLine = true,
                     isError = quantityError,
-                    shape = RoundedCornerShape(24.dp),
-
+                    shape = RoundedCornerShape(15.dp),
+                    placeholder = {
+                        Text(
+                            text = "Введите количество",
+                            color = HabitFormSecondary,
+                            fontSize = 13.sp
+                        )
+                    },
                     suffix = {
-                        Card(
-                            shape = RoundedCornerShape(12.dp),
-                            colors = CardDefaults.cardColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceVariant
-                            )
-                        ) {
-                            Text(
-                                text = selectedUnit?.habitUnit ?: "-",
-                                modifier = Modifier.padding(
-                                    horizontal = 8.dp,
-                                    vertical = 4.dp
-                                )
-                            )
-                        }
+                        Text(
+                            text = selectedUnit?.habitUnit ?: "-",
+                            fontSize = 12.sp,
+                            color = HabitFormBlueDark,
+                            fontWeight = FontWeight.Medium
+                        )
                     },
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Decimal
+                    ),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = HabitFormBlue,
+                        unfocusedBorderColor = HabitFormBorder,
+                        focusedLabelColor = HabitFormBlue,
+                        cursorColor = HabitFormBlue,
+                        focusedTextColor = HabitFormText,
+                        unfocusedTextColor = HabitFormText,
+                        errorBorderColor = Color(0xFFE57373)
                     )
                 )
 
-                // Поле для цены
+                //Стоимость
+
                 Text(
                     text = "Стоимость",
-                    style = MaterialTheme.typography.titleMedium
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = HabitFormText
                 )
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    OutlinedTextField(
-                        value = priceText,
-                        onValueChange = { newText ->
-                            if (newText.all { it.isDigit() || it == '.' } || newText.isEmpty()) {
-                                if (newText.count { it == '.' } <= 1) {
-                                    priceText = newText
-                                    priceError = false
-                                } else {
-                                    priceError = true
-                                }
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        singleLine = true,
-                        isError = priceError,
-                        shape = RoundedCornerShape(24.dp),
-                        placeholder = {
-                            Text("0")
-                        },
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Decimal
-                        )
-                    )
-                }
 
-                // Поле для комментария
+                OutlinedTextField(
+                    value = priceText,
+                    onValueChange = { newText ->
+                        if (
+                            newText.all {
+                                it.isDigit() || it == '.'
+                            } || newText.isEmpty()
+                        ) {
+                            if (newText.count { it == '.' } <= 1) {
+                                priceText = newText
+                                priceError = false
+                            } else {
+                                priceError = true
+                            }
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+                    isError = priceError,
+                    shape = RoundedCornerShape(15.dp),
+                    placeholder = {
+                        Text(
+                            text = "0",
+                            color = HabitFormSecondary,
+                            fontSize = 13.sp
+                        )
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Decimal
+                    ),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = HabitFormBlue,
+                        unfocusedBorderColor = HabitFormBorder,
+                        focusedLabelColor = HabitFormBlue,
+                        cursorColor = HabitFormBlue,
+                        focusedTextColor = HabitFormText,
+                        unfocusedTextColor = HabitFormText,
+                        errorBorderColor = Color(0xFFE57373)
+                    )
+                )
+
+                //Комментарий
+
                 Text(
                     text = "Комментарий",
-                    style = MaterialTheme.typography.titleMedium
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    color = HabitFormText
                 )
 
                 OutlinedTextField(
                     value = description,
-                    onValueChange = { description = it },
+                    onValueChange = {
+                        description = it
+                    },
                     modifier = Modifier.fillMaxWidth(),
                     minLines = 2,
                     maxLines = 2,
-                    shape = RoundedCornerShape(24.dp),
+                    shape = RoundedCornerShape(15.dp),
                     placeholder = {
-                        Text("Добавьте комментарий")
+                        Text(
+                            text = "Добавьте комментарий",
+                            color = HabitFormSecondary,
+                            fontSize = 13.sp
+                        )
                     },
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Sentences
+                    ),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = HabitFormBlue,
+                        unfocusedBorderColor = HabitFormBorder,
+                        focusedLabelColor = HabitFormBlue,
+                        cursorColor = HabitFormBlue,
+                        focusedTextColor = HabitFormText,
+                        unfocusedTextColor = HabitFormText
                     )
                 )
 
-                // Кнопки действий
+                Spacer(modifier = Modifier.height(2.dp))
+
+                //Кнопки действий
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-
                     OutlinedButton(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp),
                         onClick = onDismissRequest,
+                        shape = RoundedCornerShape(14.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
-                            contentColor = TextCardNumberColor
+                            contentColor = HabitFormBlueDark
                         ),
                         border = BorderStroke(
-                            2.dp,
-                            ButtonCancelColor
+                            1.dp,
+                            HabitFormBorder
                         )
-                    )
-                    {
-                        Text("Отмена", maxLines = 1)
+                    ) {
+                        Text(
+                            text = "Отмена",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.Medium,
+                            maxLines = 1
+                        )
                     }
 
-                    Spacer(modifier = Modifier.width(8.dp))
-
                     Button(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp),
                         onClick = {
                             if (selectedUnit?.habitName.isNullOrEmpty()) {
-                                Toast.makeText(context, "Выберите привычку", Toast.LENGTH_SHORT)
-                                    .show()
+                                Toast.makeText(
+                                    context,
+                                    "Выберите привычку",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 return@Button
                             } else if (quantityText.isBlank()) {
-                                Toast.makeText(context, "Введите количество", Toast.LENGTH_SHORT)
-                                    .show()
+                                Toast.makeText(
+                                    context,
+                                    "Введите количество",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 return@Button
                             } else if (priceText.isBlank()) {
-                                Toast.makeText(context, "Введите стоимость", Toast.LENGTH_SHORT)
-                                    .show()
+                                Toast.makeText(
+                                    context,
+                                    "Введите стоимость",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 return@Button
                             }
 
-                            // Создаем привычку на день недели
                             val updatedCalendarHabit = CalendarEntity(
                                 calendarHabitId = selectedUnit?.habitId ?: -1,
                                 calendarHabitPrice = priceText.toFloat(),
@@ -396,16 +538,23 @@ fun DialogCalendarDayNewHabit(
                                 calendarHabitDescription = description,
                                 calendarDate = getDate
                             )
-                            onSave(updatedCalendarHabit)
 
+                            onSave(updatedCalendarHabit)
                             vm.getHabitListForMonth()
                             vm.updateCalendar()
                         },
+                        shape = RoundedCornerShape(14.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = ButtonConfirmColor
+                            containerColor = HabitFormBlue,
+                            contentColor = Color.White
                         )
                     ) {
-                        Text("Сохранить", maxLines = 1)
+                        Text(
+                            text = "Сохранить",
+                            fontSize = 13.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            maxLines = 1
+                        )
                     }
                 }
             }
