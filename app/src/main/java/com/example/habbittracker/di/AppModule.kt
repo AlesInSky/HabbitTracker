@@ -24,6 +24,8 @@ val appModule = module {
 
     viewModel<StatisticViewModel> {
         StatisticViewModel(
+            calendarDao = get(),
+            habitDao = get()
         )
     }
 }
