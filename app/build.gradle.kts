@@ -13,7 +13,7 @@ android {
         applicationId = "com.example.habbittracker"
         minSdk = 28
         targetSdk = 36
-        versionCode = 2
+        versionCode = 3
         versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
