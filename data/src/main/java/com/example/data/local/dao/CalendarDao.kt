@@ -46,11 +46,19 @@ interface CalendarDao {
     @Query("SELECT SUM(calendar_habit_quantity) FROM calendar_habits WHERE calendar_habit_id = :id AND calendar_date LIKE :calendarDate")
     suspend fun getSumQuantity(id: Long, calendarDate: String): Float
 
-    @Query("""
+    @Query(
+        """
     SELECT * FROM calendar_habits WHERE calendar_habit_id = :id AND calendar_date LIKE :calendarDate
-    ORDER BY calendar_date ASC, calendarId ASC""")
+    ORDER BY calendar_date ASC, calendarId ASC"""
+    )
     suspend fun getHabitsForMonthFromId(
         id: Int,
-        calendarDate: String
+        calendarDate: String,
     ): List<CalendarEntity>
+
+    @Query(
+        """SELECT * FROM calendar_habits    
+           ORDER BY calendar_date ASC, calendarId ASC"""
+    )
+    suspend fun getAllForStatistics(): List<CalendarEntity>
 }
